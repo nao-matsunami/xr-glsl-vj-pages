@@ -1,0 +1,9 @@
+{
+  "name": "xr-glsl-vj-pages-source",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "publish:pages": "node scripts/publish-pages.mjs"
+  }
+}

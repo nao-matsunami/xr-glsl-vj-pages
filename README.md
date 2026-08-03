@@ -10,6 +10,14 @@ python3 -m http.server 4184
 
 Open `http://localhost:4184/`.
 
+## Publish
+
+```sh
+npm run publish:pages
+```
+
+この作業ディレクトリ直下には `.git` を作らず、`pages-work/` にGitHub Pages用リポジトリを置いて同期します。Codexのサンドボックスで直下 `.git` 作成が拒否される場合でも、既存の `*-pages` プロジェクトと同じように公開できます。
+
 ## Daily Update
 
 `app.js` の `plannedDrops` に日付ごとの素材を追加します。
