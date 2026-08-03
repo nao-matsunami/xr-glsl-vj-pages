@@ -150,6 +150,17 @@ h1 {
   background: rgba(80, 208, 160, 0.16);
 }
 
+.text-button:disabled {
+  cursor: progress;
+  opacity: 0.86;
+}
+
+.text-button.is-recording {
+  border-color: rgba(255, 109, 102, 0.86);
+  background: rgba(255, 109, 102, 0.18);
+  color: var(--ink);
+}
+
 .detail-panel {
   min-height: 100vh;
   padding: 28px;

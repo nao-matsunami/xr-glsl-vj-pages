@@ -119,6 +119,9 @@ let startTime = performance.now();
 let pausedAt = 0;
 let isPaused = false;
 let calmMotion = false;
+let videoRecorder = null;
+let recordingStartedAt = 0;
+let recordingProgressId = 0;
 let uniforms;
 
 if (!gl) {
@@ -253,6 +256,18 @@ document.querySelector("#save-frame").addEventListener("click", () => {
   link.click();
 });
 
+document.querySelector("#save-video").addEventListener("click", () => {
+  recordLoopVideo().catch((error) => {
+    const button = document.querySelector("#save-video");
+    button.textContent = "NO VIDEO";
+    button.disabled = false;
+    window.setTimeout(() => {
+      button.textContent = "MP4";
+    }, 1600);
+    throw error;
+  });
+});
+
 document.querySelector("#copy-shader").addEventListener("click", async () => {
   await navigator.clipboard.writeText(makePortableShader(activePiece));
   const button = document.querySelector("#copy-shader");
@@ -330,6 +345,84 @@ function makePortableShader(piece) {
 // Palette B: vec3(${piece.palette.slice(3, 6).join(", ")})`;
 }
 
+async function recordLoopVideo() {
+  if (videoRecorder?.state === "recording") return;
+  if (!canvas.captureStream || !window.MediaRecorder) {
+    throw new Error("Canvas video recording is not supported in this browser.");
+  }
+
+  const format = pickVideoFormat();
+  if (!format) {
+    throw new Error("No supported MediaRecorder video format was found.");
+  }
+
+  const button = document.querySelector("#save-video");
+  const chunks = [];
+  const stream = canvas.captureStream(60);
+  const recorder = new MediaRecorder(stream, {
+    mimeType: format.mimeType,
+    videoBitsPerSecond: 8_000_000,
+  });
+
+  videoRecorder = recorder;
+  recorder.addEventListener("dataavailable", (event) => {
+    if (event.data.size > 0) chunks.push(event.data);
+  });
+
+  const finished = new Promise((resolve) => {
+    recorder.addEventListener("stop", resolve, { once: true });
+  });
+
+  button.disabled = true;
+  button.classList.add("is-recording");
+  startTime = performance.now();
+  pausedAt = 0;
+  isPaused = false;
+  document.querySelector("#play-icon").textContent = "II";
+
+  recordingStartedAt = performance.now();
+  updateRecordingProgress();
+  recorder.start(250);
+
+  window.setTimeout(() => {
+    if (recorder.state === "recording") recorder.stop();
+  }, activePiece.loopSeconds * 1000);
+
+  await finished;
+  cancelAnimationFrame(recordingProgressId);
+  stream.getTracks().forEach((track) => track.stop());
+
+  const blob = new Blob(chunks, { type: format.mimeType });
+  downloadBlob(`${activePiece.date}-${slugify(activePiece.title)}.${format.extension}`, blob);
+
+  button.classList.remove("is-recording");
+  button.textContent = format.extension.toUpperCase();
+  window.setTimeout(() => {
+    button.textContent = "MP4";
+    button.disabled = false;
+    videoRecorder = null;
+  }, 1400);
+}
+
+function updateRecordingProgress() {
+  const button = document.querySelector("#save-video");
+  const elapsed = (performance.now() - recordingStartedAt) / 1000;
+  const progress = Math.min(99, Math.floor((elapsed / activePiece.loopSeconds) * 100));
+  button.textContent = `REC ${progress}%`;
+  recordingProgressId = requestAnimationFrame(updateRecordingProgress);
+}
+
+function pickVideoFormat() {
+  const candidates = [
+    { mimeType: "video/mp4;codecs=h264", extension: "mp4" },
+    { mimeType: "video/mp4", extension: "mp4" },
+    { mimeType: "video/webm;codecs=vp9", extension: "webm" },
+    { mimeType: "video/webm;codecs=vp8", extension: "webm" },
+    { mimeType: "video/webm", extension: "webm" },
+  ];
+  return candidates.find((candidate) => MediaRecorder.isTypeSupported(candidate.mimeType));
+}
+
 function pickPiece(date) {
   const direct = plannedDrops.find((piece) => piece.date === date);
   if (direct) return direct;
@@ -396,6 +489,10 @@ function slugify(value) {
 
 function downloadText(filename, text, type) {
   const blob = new Blob([text], { type });
+  downloadBlob(filename, blob);
+}
+
+function downloadBlob(filename, blob) {
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.download = filename;
