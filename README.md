@@ -35,5 +35,12 @@ npm run publish:pages
 
 - `PNG`: 現在のフレームを書き出します。
 - `MP4`: ループ尺ぶんの動画を書き出します。ブラウザがMP4録画に未対応の場合はWebMで保存します。
+- `ALPHA`: 黒い部分を透明化したアルファ付きWebMを書き出します。
 - `GLSL`: フラグメントシェーダーをクリップボードにコピーします。
 - `XR`: シェーダー、uniform、検索ソースを含む `.xr-glsl.json` を保存します。
+
+アルファ付きMOVが必要な場合は、`ALPHA` で保存したWebMをProRes 4444へ変換します。
+
+```sh
+ffmpeg -i input-alpha.webm -c:v prores_ks -profile:v 4444 -pix_fmt yuva444p10le output-alpha.mov
+```

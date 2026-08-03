@@ -122,6 +122,7 @@ let calmMotion = false;
 let videoRecorder = null;
 let recordingStartedAt = 0;
 let recordingProgressId = 0;
+let alphaFrameId = 0;
 let uniforms;
 
 if (!gl) {
@@ -268,6 +269,18 @@ document.querySelector("#save-video").addEventListener("click", () => {
   });
 });
 
+document.querySelector("#save-alpha").addEventListener("click", () => {
+  recordAlphaVideo().catch((error) => {
+    const button = document.querySelector("#save-alpha");
+    button.textContent = "NO ALPHA";
+    button.disabled = false;
+    window.setTimeout(() => {
+      button.textContent = "ALPHA";
+    }, 1600);
+    throw error;
+  });
+});
+
 document.querySelector("#copy-shader").addEventListener("click", async () => {
   await navigator.clipboard.writeText(makePortableShader(activePiece));
   const button = document.querySelector("#copy-shader");
@@ -381,7 +394,7 @@ async function recordLoopVideo() {
   document.querySelector("#play-icon").textContent = "II";
 
   recordingStartedAt = performance.now();
-  updateRecordingProgress();
+  updateRecordingProgress(button);
   recorder.start(250);
 
   window.setTimeout(() => {
@@ -404,18 +417,109 @@ async function recordLoopVideo() {
   }, 1400);
 }
 
-function updateRecordingProgress() {
-  const button = document.querySelector("#save-video");
+async function recordAlphaVideo() {
+  if (videoRecorder?.state === "recording") return;
+  if (!window.MediaRecorder) {
+    throw new Error("Video recording is not supported in this browser.");
+  }
+
+  const format = pickAlphaVideoFormat();
+  if (!format) {
+    throw new Error("No supported alpha-capable video format was found.");
+  }
+
+  const button = document.querySelector("#save-alpha");
+  const exportCanvas = document.createElement("canvas");
+  exportCanvas.width = canvas.width;
+  exportCanvas.height = canvas.height;
+  const exportContext = exportCanvas.getContext("2d", {
+    alpha: true,
+    willReadFrequently: true,
+  });
+
+  const chunks = [];
+  const stream = exportCanvas.captureStream(60);
+  const recorder = new MediaRecorder(stream, {
+    mimeType: format.mimeType,
+    videoBitsPerSecond: 10_000_000,
+  });
+
+  videoRecorder = recorder;
+  recorder.addEventListener("dataavailable", (event) => {
+    if (event.data.size > 0) chunks.push(event.data);
+  });
+
+  const finished = new Promise((resolve) => {
+    recorder.addEventListener("stop", resolve, { once: true });
+  });
+
+  button.disabled = true;
+  button.classList.add("is-recording");
+  startTime = performance.now();
+  pausedAt = 0;
+  isPaused = false;
+  document.querySelector("#play-icon").textContent = "II";
+
+  const renderAlphaFrame = () => {
+    exportContext.clearRect(0, 0, exportCanvas.width, exportCanvas.height);
+    exportContext.drawImage(canvas, 0, 0, exportCanvas.width, exportCanvas.height);
+    const frame = exportContext.getImageData(0, 0, exportCanvas.width, exportCanvas.height);
+    const pixels = frame.data;
+    for (let i = 0; i < pixels.length; i += 4) {
+      const luminance = pixels[i] * 0.2126 + pixels[i + 1] * 0.7152 + pixels[i + 2] * 0.0722;
+      const alpha = smoothstep(4, 52, luminance) * 255;
+      pixels[i + 3] = alpha;
+    }
+    exportContext.putImageData(frame, 0, 0);
+    alphaFrameId = requestAnimationFrame(renderAlphaFrame);
+  };
+
+  recordingStartedAt = performance.now();
+  renderAlphaFrame();
+  updateRecordingProgress(button);
+  recorder.start(250);
+
+  window.setTimeout(() => {
+    if (recorder.state === "recording") recorder.stop();
+  }, activePiece.loopSeconds * 1000);
+
+  await finished;
+  cancelAnimationFrame(alphaFrameId);
+  cancelAnimationFrame(recordingProgressId);
+  stream.getTracks().forEach((track) => track.stop());
+
+  const blob = new Blob(chunks, { type: format.mimeType });
+  downloadBlob(`${activePiece.date}-${slugify(activePiece.title)}-alpha.${format.extension}`, blob);
+
+  button.classList.remove("is-recording");
+  button.textContent = "WEBM";
+  window.setTimeout(() => {
+    button.textContent = "ALPHA";
+    button.disabled = false;
+    videoRecorder = null;
+  }, 1400);
+}
+
+function updateRecordingProgress(button) {
   const elapsed = (performance.now() - recordingStartedAt) / 1000;
   const progress = Math.min(99, Math.floor((elapsed / activePiece.loopSeconds) * 100));
   button.textContent = `REC ${progress}%`;
-  recordingProgressId = requestAnimationFrame(updateRecordingProgress);
+  recordingProgressId = requestAnimationFrame(() => updateRecordingProgress(button));
 }
 
 function pickVideoFormat() {
   const candidates = [
     { mimeType: "video/mp4;codecs=h264", extension: "mp4" },
     { mimeType: "video/mp4", extension: "mp4" },
+    { mimeType: "video/webm;codecs=vp9", extension: "webm" },
+    { mimeType: "video/webm;codecs=vp8", extension: "webm" },
+    { mimeType: "video/webm", extension: "webm" },
+  ];
+  return candidates.find((candidate) => MediaRecorder.isTypeSupported(candidate.mimeType));
+}
+
+function pickAlphaVideoFormat() {
+  const candidates = [
     { mimeType: "video/webm;codecs=vp9", extension: "webm" },
     { mimeType: "video/webm;codecs=vp8", extension: "webm" },
     { mimeType: "video/webm", extension: "webm" },
@@ -464,6 +568,11 @@ function hash(value) {
 
 function fract(value) {
   return value - Math.floor(value);
+}
+
+function smoothstep(edge0, edge1, value) {
+  const t = Math.min(1, Math.max(0, (value - edge0) / (edge1 - edge0)));
+  return t * t * (3 - 2 * t);
 }
 
 function hsv(h, s, v) {
