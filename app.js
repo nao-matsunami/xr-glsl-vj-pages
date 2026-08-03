@@ -24,6 +24,13 @@ const researchSources = [
   },
 ];
 
+const purchaseConfig = {
+  enabled: false,
+  label: "Full Pack",
+  url: "",
+  note: "映像データの購入先は準備中です。",
+};
+
 const plannedDrops = [
   {
     date: todayIso,
@@ -196,6 +203,7 @@ function renderContent() {
   document.querySelector("#loop-length").textContent = `${activePiece.loopSeconds}s`;
   document.querySelector("#why-copy").textContent = activePiece.why;
   document.querySelector("#shader-code").textContent = makePortableShader(activePiece);
+  renderPurchaseLink(activePiece);
 
   const sourceList = document.querySelector("#source-list");
   sourceList.innerHTML = "";
@@ -231,6 +239,20 @@ function renderContent() {
     item.append(button, small);
     archive.append(item);
   });
+}
+
+function renderPurchaseLink(piece) {
+  const link = document.querySelector("#purchase-link");
+  const note = document.querySelector("#purchase-note");
+  const itemUrl = piece.purchaseUrl || purchaseConfig.url;
+  const enabled = Boolean(itemUrl && purchaseConfig.enabled);
+
+  link.textContent = piece.purchaseLabel || purchaseConfig.label;
+  link.href = enabled ? itemUrl : "#";
+  link.target = enabled ? "_blank" : "";
+  link.rel = enabled ? "noreferrer" : "";
+  link.setAttribute("aria-disabled", String(!enabled));
+  note.textContent = piece.purchaseNote || purchaseConfig.note;
 }
 
 document.querySelector("#toggle-play").addEventListener("click", () => {

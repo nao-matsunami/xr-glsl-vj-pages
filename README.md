@@ -31,6 +31,21 @@ npm run publish:pages
 
 未登録の日付は、日付シードから自動生成されます。
 
+## Sales Links
+
+映像データの購入先が決まったら、`app.js` の `purchaseConfig` を更新します。
+
+```js
+const purchaseConfig = {
+  enabled: true,
+  label: "Buy Full Pack",
+  url: "https://example.com/your-pack",
+  note: "MP4 / alpha MOV pack available now.",
+};
+```
+
+日付ごとに別URLへ出したい場合は、`plannedDrops` の各項目に `purchaseUrl`、`purchaseLabel`、`purchaseNote` を追加します。
+
 ## Export
 
 - `PNG`: 現在のフレームを書き出します。
