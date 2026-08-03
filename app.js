@@ -82,7 +82,7 @@ void main() {
   float cycle = mod(u_time, u_loop) / u_loop;
   float phase = cycle * PI * 2.0;
 
-  vec2 p = uv * rot(phase * 0.25);
+  vec2 p = uv * rot(phase);
   float pulse = 0.5 + 0.5 * sin(phase);
   float radial = ring(p, 0.28 + pulse * 0.24, 0.045);
   radial += ring(p * rot(-phase * 0.6), 0.72, 0.025) * 0.7;
