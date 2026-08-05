@@ -9,7 +9,16 @@ const sourceDir = path.resolve(scriptDir, "..");
 const targetDir = path.join(sourceDir, "pages-work");
 const repo = "nao-matsunami/xr-glsl-vj-pages";
 
-const excluded = new Set([".git", "node_modules", "pages-work", "canvas-2d-vj-site"]);
+const excluded = new Set([
+  ".git",
+  "node_modules",
+  "pages-work",
+  "canvas-2d-vj-site",
+  "three-js-vj-site",
+  "svg-css-vj-site",
+  "python-vj-site",
+  "blender-vj-site",
+]);
 
 async function pathExists(targetPath) {
   try {
