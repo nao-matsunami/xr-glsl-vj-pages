@@ -20,6 +20,7 @@ const excluded = new Set([
   "blender-vj-site",
   "p5-js-vj-site",
   "webgpu-vj-site",
+  "hydra-vj-site",
 ]);
 
 async function pathExists(targetPath) {
