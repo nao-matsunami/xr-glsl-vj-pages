@@ -1,0 +1,45 @@
+{
+  "sources": [
+    {
+      "label": "MDN WebXR Device API",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/WebXR_Device_API",
+      "note": "WebXRはVR/AR向けに3Dシーンを適切なフレームレートで描画し、2Dミラー表示も扱える。ただしHTTPS前提かつ対応状況に注意が必要。"
+    },
+    {
+      "label": "Khronos OpenGL Registry",
+      "url": "https://registry.khronos.org/OpenGL/index_gl.php",
+      "note": "GLSL 4.60仕様とOpenGLの公式リファレンスがまとまっているため、関数名や言語仕様確認の起点にした。"
+    },
+    {
+      "label": "Khronos OpenGL ES / GLSL Reference Pages",
+      "url": "https://registry.khronos.org/OpenGL-Refpages/index.php",
+      "note": "WebGLとの親和性が高いOpenGL ES系の参照に使いやすく、毎日の小さなシェーダー制作に向く。"
+    }
+  ],
+  "drops": [
+    {
+      "date": "2026-08-05",
+      "title": "Soft Depth Gate",
+      "loopSeconds": 20,
+      "palette": [0.95, 0.75, 0.22, 0.18, 0.58, 0.5],
+      "copy": "奥行きゲートのように前後するリングを20秒で循環。背景映像に重ねても情報量が増えすぎない。",
+      "why": "XR素材では立体感の示唆が有効だが、実際のヘッドセット表示では過密な高周波パターンが疲れやすい。そこで低周波のリングと暗い余白を主体にした。"
+    },
+    {
+      "date": "2026-08-04",
+      "title": "Phase Lattice",
+      "loopSeconds": 12,
+      "palette": [1.0, 0.35, 0.4, 0.22, 0.7, 0.95],
+      "copy": "格子の位相をずらしながら、12秒で完全に戻るパターン。BPMに同期させやすい短い尺を想定。",
+      "why": "翌日の素材は、リズムに合わせて切り替えやすい短尺ループを優先した。sin/cosの整数周期だけで動きを閉じ、VJソフトに取り込んでも始点と終点の違和感が出にくい構成にした。"
+    },
+    {
+      "date": "2026-08-03",
+      "title": "Orbiting Scan Bloom",
+      "loopSeconds": 16,
+      "palette": [0.31, 0.82, 0.63, 1.0, 0.8, 0.35],
+      "copy": "細い走査線、円軌道、低速の色相変化を重ねたクラブ投影向けの無音ループ。XRのミラー表示でも視線誘導が強すぎないよう、中心密度と周辺の余白を分けている。",
+      "why": "今日の軸は「WebXRでも通常スクリーンでも破綻しないGLSL素材」。MDNのWebXR資料ではXR表示と2Dミラーの両方が重要になるため、画面端まで細部を置きすぎず、中央の周期運動を主役にした。GLSLはKhronosの仕様・参照ページを基準に、WebGLで扱いやすい基本関数だけで構成した。"
+    }
+  ]
+}

@@ -10,7 +10,24 @@ python3 -m http.server 4184
 
 Open `http://localhost:4184/`.
 
-## Publish
+## Daily Publish
+
+今日の素材を `data/drops.json` に追加して、そのままGitHub Pagesへ公開します。
+
+```sh
+npm run daily:publish
+```
+
+日付を指定して追加する場合:
+
+```sh
+npm run daily:update -- --date=2026-08-06
+npm run publish:pages
+```
+
+既に同じ日付の素材がある場合、`daily:update` は何も変更しません。
+
+## Publish Only
 
 ```sh
 npm run publish:pages
@@ -18,9 +35,9 @@ npm run publish:pages
 
 この作業ディレクトリ直下には `.git` を作らず、`pages-work/` にGitHub Pages用リポジトリを置いて同期します。Codexのサンドボックスで直下 `.git` 作成が拒否される場合でも、既存の `*-pages` プロジェクトと同じように公開できます。
 
-## Daily Update
+## Project Data
 
-`app.js` の `plannedDrops` に日付ごとの素材を追加します。
+日付ごとの素材は `data/drops.json` に保存します。
 
 - `date`: `YYYY-MM-DD`
 - `title`: 作品名
@@ -29,22 +46,22 @@ npm run publish:pages
 - `copy`: 素材説明
 - `why`: 検索メモと採用理由
 
-未登録の日付は、日付シードから自動生成されます。
+未登録の日付は、表示時には日付シードから自動生成されます。公開アーカイブとして残したい日は `npm run daily:update` で `data/drops.json` に固定します。
 
 ## Sales Links
 
-映像データの購入先が決まったら、`app.js` の `purchaseConfig` を更新します。
+映像データの購入先が決まったら、`data/purchase.json` を更新します。
 
-```js
-const purchaseConfig = {
-  enabled: true,
-  label: "Buy Full Pack",
-  url: "https://example.com/your-pack",
-  note: "MP4 / alpha MOV pack available now.",
-};
+```json
+{
+  "enabled": true,
+  "label": "Buy Full Pack",
+  "url": "https://example.com/your-pack",
+  "note": "MP4 / alpha MOV pack available now."
+}
 ```
 
-日付ごとに別URLへ出したい場合は、`plannedDrops` の各項目に `purchaseUrl`、`purchaseLabel`、`purchaseNote` を追加します。
+日付ごとに別URLへ出したい場合は、`data/drops.json` の各項目に `purchaseUrl`、`purchaseLabel`、`purchaseNote` を追加します。
 
 ## Export
 

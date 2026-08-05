@@ -6,7 +6,7 @@ const gl = canvas.getContext("webgl", {
 
 const todayIso = localIsoDate(new Date());
 
-const researchSources = [
+let researchSources = [
   {
     label: "MDN WebXR Device API",
     url: "https://developer.mozilla.org/en-US/docs/Web/API/WebXR_Device_API",
@@ -24,14 +24,14 @@ const researchSources = [
   },
 ];
 
-const purchaseConfig = {
+let purchaseConfig = {
   enabled: false,
   label: "Full Pack",
   url: "",
   note: "映像データの購入先は準備中です。",
 };
 
-const plannedDrops = [
+let plannedDrops = [
   {
     date: todayIso,
     title: "Orbiting Scan Bloom",
@@ -119,7 +119,7 @@ void main() {
 }
 `.trim();
 
-let activePiece = pickPiece(todayIso);
+let activePiece;
 let program;
 let animationId = 0;
 let startTime = performance.now();
@@ -132,12 +132,43 @@ let recordingProgressId = 0;
 let alphaFrameId = 0;
 let uniforms;
 
-if (!gl) {
-  document.querySelector(".stage").innerHTML = "<p>WebGLを有効にしてください。</p>";
-} else {
+initialize();
+
+async function initialize() {
+  await loadProjectData();
+  activePiece = pickPiece(todayIso);
+
+  if (!gl) {
+    document.querySelector(".stage").innerHTML = "<p>WebGLを有効にしてください。</p>";
+    return;
+  }
+
   setupGl();
   renderContent();
   requestAnimationFrame(draw);
+}
+
+async function loadProjectData() {
+  try {
+    const [dropsResponse, purchaseResponse] = await Promise.all([
+      fetch("./data/drops.json", { cache: "no-store" }),
+      fetch("./data/purchase.json", { cache: "no-store" }),
+    ]);
+
+    if (dropsResponse.ok) {
+      const data = await dropsResponse.json();
+      if (Array.isArray(data.sources)) researchSources = data.sources;
+      if (Array.isArray(data.drops) && data.drops.length > 0) {
+        plannedDrops = data.drops.sort((a, b) => b.date.localeCompare(a.date));
+      }
+    }
+
+    if (purchaseResponse.ok) {
+      purchaseConfig = { ...purchaseConfig, ...(await purchaseResponse.json()) };
+    }
+  } catch {
+    // File previews and partial deployments fall back to the embedded starter data.
+  }
 }
 
 function setupGl() {
