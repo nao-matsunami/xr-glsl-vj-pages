@@ -126,7 +126,7 @@ async function main() {
   }
 
   const stamp = new Date().toISOString().slice(0, 16).replace("T", " ");
-  await run("git", ["commit", "-m", `Publish XR GLSL VJ site ${stamp}`], targetDir);
+  await run("git", ["commit", "-m", `Publish GLSL VJ site ${stamp}`], targetDir);
 
   const token = await runCapture("gh", ["auth", "token"], targetDir);
   const basic = Buffer.from(`x-access-token:${token}`).toString("base64");
