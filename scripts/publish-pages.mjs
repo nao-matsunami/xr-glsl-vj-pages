@@ -18,6 +18,7 @@ const excluded = new Set([
   "svg-css-vj-site",
   "python-vj-site",
   "blender-vj-site",
+  "p5-js-vj-site",
 ]);
 
 async function pathExists(targetPath) {
