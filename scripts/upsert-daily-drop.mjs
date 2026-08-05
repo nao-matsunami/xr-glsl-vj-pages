@@ -6,7 +6,9 @@ const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(scriptDir, "..");
 const dropsPath = path.join(rootDir, "data", "drops.json");
 const dateArg = process.argv.find((arg) => arg.startsWith("--date="));
+const pipelineArg = process.argv.find((arg) => arg.startsWith("--pipeline="));
 const targetDate = dateArg ? dateArg.slice("--date=".length) : localIsoDate(new Date());
+const pipeline = pipelineArg ? pipelineArg.slice("--pipeline=".length) : "glsl";
 
 const titles = [
   "Chromatic Return Field",
@@ -19,6 +21,14 @@ const titles = [
   "Pulse Mirror Well",
 ];
 
+const canvas2dTitles = [
+  "Radial Type Pulse",
+  "Orbit Mesh Drawing",
+  "Signal Glyph Sweep",
+  "Luma Thread Field",
+  "Scanline Particle Well",
+];
+
 const copyLines = [
   "クラブ投影や配信背景に使いやすい、中心運動と余白を分けた無音VJループ。",
   "細い走査線とリングの周期をそろえ、短い尺でも切れ目が目立ちにくい素材。",
@@ -26,10 +36,22 @@ const copyLines = [
   "黒背景に重ねやすい発光系のサンプル。販売用のMP4/MOVパックへのプレビューとして扱う。",
 ];
 
+const canvas2dCopyLines = [
+  "Canvas 2Dだけで描く、発光リングと軌道粒子の無音VJループ。",
+  "軽量なWebプレビューから販売用レンダーへ展開するためのCanvas 2D生成素材。",
+  "GLSLを使わず、描画コマンドと日付シードだけで構成する抽象ループ。",
+];
+
 const whyLines = [
   "今日の判断は、WebXRでの2Dミラー表示と通常スクリーン投影の両方で破綻しないことを優先した。GLSLはWebGLで扱いやすい基本関数だけに絞り、`u_loop` 秒で同じ状態へ戻る周期設計にしている。",
   "VJ素材としての扱いやすさを優先し、BPM同期しやすい整数秒ループにした。高密度なパターンは疲れやすいため、中心の動きと周辺の余白を分けている。",
   "サンプルページでは軽量なプレビューを見せ、実データは販売リンクへ誘導する前提にした。黒背景をアルファ化しやすいよう、発光部分と背景の輝度差を保っている。",
+];
+
+const canvas2dWhyLines = [
+  "非シェーダーパイプラインの最初としてCanvas 2Dを選んだ。依存が軽く、ブラウザ上のサンプル表示とMac miniでの固定FPS書き出しの両方へ展開しやすい。",
+  "Canvas 2Dは線、粒子、タイポグラフィ、走査線のようなVJ素材を素早く作れる。今日のサンプルは整数周期のsin/cosだけで構成し、ループ終端で同じ状態に戻る設計にした。",
+  "GLSLとは別の表現軸として、描画コマンドベースの軽量な映像生成を試す。販売用マスターは後でMac mini上の固定FPSレンダリングへ接続する前提にしている。",
 ];
 
 const data = JSON.parse(await fs.readFile(dropsPath, "utf8"));
@@ -45,11 +67,12 @@ const hueA = fract(seed * 0.0183);
 const hueB = fract(hueA + 0.38);
 const drop = {
   date: targetDate,
-  title: titles[seed % titles.length],
+  title: pipeline === "canvas2d" ? canvas2dTitles[seed % canvas2dTitles.length] : titles[seed % titles.length],
+  pipeline,
   loopSeconds: [8, 12, 16, 20][seed % 4],
   palette: [...hsv(hueA, 0.72, 0.92), ...hsv(hueB, 0.68, 0.8)],
-  copy: copyLines[seed % copyLines.length],
-  why: whyLines[seed % whyLines.length],
+  copy: pipeline === "canvas2d" ? canvas2dCopyLines[seed % canvas2dCopyLines.length] : copyLines[seed % copyLines.length],
+  why: pipeline === "canvas2d" ? canvas2dWhyLines[seed % canvas2dWhyLines.length] : whyLines[seed % whyLines.length],
 };
 
 data.drops.unshift(drop);

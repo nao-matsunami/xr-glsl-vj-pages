@@ -14,6 +14,7 @@
     <main class="app-shell">
       <section class="stage" aria-label="今日のVJループ">
         <canvas id="vj-canvas"></canvas>
+        <canvas id="vj-canvas-2d" hidden></canvas>
         <div class="stage__shade"></div>
         <div class="topbar">
           <div>
@@ -56,13 +57,13 @@
           </article>
           <article>
             <p class="section-label">XR</p>
-            <strong>WebGL ready</strong>
-            <span>mirrors cleanly in headset views</span>
+            <strong id="pipeline-label">WebGL ready</strong>
+            <span id="pipeline-note">mirrors cleanly in headset views</span>
           </article>
           <article>
             <p class="section-label">Format</p>
-            <strong>Fragment shader</strong>
-            <span>date-seeded uniforms</span>
+            <strong id="format-label">Fragment shader</strong>
+            <span id="format-note">date-seeded uniforms</span>
           </article>
         </div>
 
@@ -82,7 +83,7 @@
         </section>
 
         <section class="tab-panel" id="tab-shader" role="tabpanel">
-          <h3>今日のGLSL</h3>
+          <h3 id="code-heading">今日のGLSL</h3>
           <pre><code id="shader-code"></code></pre>
         </section>
 

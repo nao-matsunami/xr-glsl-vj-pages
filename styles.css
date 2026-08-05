@@ -45,10 +45,16 @@ button {
   background: #050606;
 }
 
-#vj-canvas {
+#vj-canvas,
+#vj-canvas-2d {
   display: block;
   width: 100%;
   height: 100%;
+}
+
+#vj-canvas[hidden],
+#vj-canvas-2d[hidden] {
+  display: none;
 }
 
 .stage__shade {

@@ -1,4 +1,6 @@
 const canvas = document.querySelector("#vj-canvas");
+const canvas2d = document.querySelector("#vj-canvas-2d");
+const context2d = canvas2d.getContext("2d", { alpha: false });
 const gl = canvas.getContext("webgl", {
   antialias: false,
   preserveDrawingBuffer: true,
@@ -131,6 +133,8 @@ let recordingStartedAt = 0;
 let recordingProgressId = 0;
 let alphaFrameId = 0;
 let uniforms;
+let activeCanvas = canvas;
+let activePipeline = "glsl";
 
 initialize();
 
@@ -138,12 +142,12 @@ async function initialize() {
   await loadProjectData();
   activePiece = pickPiece(todayIso);
 
-  if (!gl) {
+  if (!gl && getPipeline(activePiece) === "glsl") {
     document.querySelector(".stage").innerHTML = "<p>WebGLを有効にしてください。</p>";
     return;
   }
 
-  setupGl();
+  if (gl) setupGl();
   renderContent();
   requestAnimationFrame(draw);
 }
@@ -200,6 +204,13 @@ function setupGl() {
 }
 
 function draw(now) {
+  activePipeline = getPipeline(activePiece);
+  if (activePipeline === "canvas2d") {
+    drawCanvas2d(now);
+    animationId = requestAnimationFrame(draw);
+    return;
+  }
+
   resize();
   const elapsed = isPaused ? pausedAt : (now - startTime) / 1000;
   const speed = calmMotion ? 0.38 : 1;
@@ -226,14 +237,95 @@ function resize() {
   }
 }
 
+function resizeCanvas2d() {
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const width = Math.floor(canvas2d.clientWidth * dpr);
+  const height = Math.floor(canvas2d.clientHeight * dpr);
+  if (canvas2d.width !== width || canvas2d.height !== height) {
+    canvas2d.width = width;
+    canvas2d.height = height;
+  }
+}
+
+function drawCanvas2d(now) {
+  resizeCanvas2d();
+  const width = canvas2d.width;
+  const height = canvas2d.height;
+  const elapsed = isPaused ? pausedAt : (now - startTime) / 1000;
+  const speed = calmMotion ? 0.38 : 1;
+  const cycle = ((elapsed * speed) % activePiece.loopSeconds) / activePiece.loopSeconds;
+  const phase = cycle * Math.PI * 2;
+  const minSide = Math.min(width, height);
+  const seed = hash(`${activePiece.date}:${activePiece.title}`);
+  const paletteA = rgb(activePiece.palette.slice(0, 3));
+  const paletteB = rgb(activePiece.palette.slice(3, 6));
+
+  context2d.clearRect(0, 0, width, height);
+  context2d.fillStyle = "#020303";
+  context2d.fillRect(0, 0, width, height);
+  context2d.save();
+  context2d.translate(width / 2, height / 2);
+  context2d.globalCompositeOperation = "lighter";
+
+  const rings = 7 + (seed % 5);
+  for (let i = 0; i < rings; i += 1) {
+    const t = i / rings;
+    const radius = minSide * (0.12 + t * 0.39 + Math.sin(phase + i) * 0.012);
+    const wobble = Math.sin(phase * (i + 1) + seed * 0.01) * 0.18;
+    context2d.save();
+    context2d.rotate(phase * (i % 2 === 0 ? 1 : -1) + wobble);
+    context2d.strokeStyle = i % 2 === 0 ? paletteA : paletteB;
+    context2d.globalAlpha = 0.16 + (1 - t) * 0.22;
+    context2d.lineWidth = Math.max(1, minSide * (0.002 + t * 0.004));
+    context2d.setLineDash([minSide * (0.012 + t * 0.01), minSide * 0.018]);
+    context2d.beginPath();
+    context2d.ellipse(0, 0, radius, radius * (0.58 + t * 0.28), 0, 0, Math.PI * 2);
+    context2d.stroke();
+    context2d.restore();
+  }
+
+  const count = 48;
+  for (let i = 0; i < count; i += 1) {
+    const t = i / count;
+    const orbit = phase + t * Math.PI * 2;
+    const lane = 0.18 + ((i * 17 + seed) % 100) / 100 * 0.42;
+    const x = Math.cos(orbit * (1 + (i % 3) * 0.2)) * minSide * lane;
+    const y = Math.sin(orbit * (1 - (i % 4) * 0.08)) * minSide * lane * 0.68;
+    const size = minSide * (0.004 + (((i + seed) % 9) / 9) * 0.012);
+    const gradient = context2d.createRadialGradient(x, y, 0, x, y, size * 4);
+    gradient.addColorStop(0, i % 2 === 0 ? paletteA : paletteB);
+    gradient.addColorStop(1, "rgba(0,0,0,0)");
+    context2d.globalAlpha = 0.34;
+    context2d.fillStyle = gradient;
+    context2d.beginPath();
+    context2d.arc(x, y, size * 4, 0, Math.PI * 2);
+    context2d.fill();
+  }
+
+  context2d.globalCompositeOperation = "source-over";
+  context2d.globalAlpha = 0.24;
+  context2d.strokeStyle = "rgba(244,243,237,0.42)";
+  context2d.lineWidth = Math.max(1, minSide * 0.0015);
+  for (let y = -height / 2; y < height / 2; y += minSide * 0.045) {
+    const offset = Math.sin(phase + y * 0.01) * minSide * 0.018;
+    context2d.beginPath();
+    context2d.moveTo(-width / 2, y + offset);
+    context2d.lineTo(width / 2, y - offset);
+    context2d.stroke();
+  }
+  context2d.restore();
+}
+
 function renderContent() {
+  setActivePipeline(activePiece);
   document.querySelector("#piece-title").textContent = activePiece.title;
   document.querySelector("#piece-date").textContent = activePiece.date;
   document.querySelector("#detail-title").textContent = activePiece.title;
   document.querySelector("#detail-copy").textContent = activePiece.copy;
   document.querySelector("#loop-length").textContent = `${activePiece.loopSeconds}s`;
   document.querySelector("#why-copy").textContent = activePiece.why;
-  document.querySelector("#shader-code").textContent = makePortableShader(activePiece);
+  document.querySelector("#shader-code").textContent = makePortableCode(activePiece);
+  document.querySelector("#copy-shader").textContent = activePipeline === "canvas2d" ? "CODE" : "GLSL";
   renderPurchaseLink(activePiece);
 
   const sourceList = document.querySelector("#source-list");
@@ -272,6 +364,24 @@ function renderContent() {
   });
 }
 
+function setActivePipeline(piece) {
+  activePipeline = getPipeline(piece);
+  activeCanvas = activePipeline === "canvas2d" ? canvas2d : canvas;
+  canvas.hidden = activePipeline !== "glsl";
+  canvas2d.hidden = activePipeline !== "canvas2d";
+
+  document.querySelector("#pipeline-label").textContent =
+    activePipeline === "canvas2d" ? "Canvas 2D ready" : "WebGL ready";
+  document.querySelector("#pipeline-note").textContent =
+    activePipeline === "canvas2d" ? "browser-native generative loop" : "mirrors cleanly in headset views";
+  document.querySelector("#format-label").textContent =
+    activePipeline === "canvas2d" ? "Canvas recipe" : "Fragment shader";
+  document.querySelector("#format-note").textContent =
+    activePipeline === "canvas2d" ? "date-seeded drawing commands" : "date-seeded uniforms";
+  document.querySelector("#code-heading").textContent =
+    activePipeline === "canvas2d" ? "今日のCanvas 2D" : "今日のGLSL";
+}
+
 function renderPurchaseLink(piece) {
   const link = document.querySelector("#purchase-link");
   const note = document.querySelector("#purchase-note");
@@ -306,7 +416,7 @@ document.querySelector("#toggle-motion").addEventListener("click", () => {
 document.querySelector("#save-frame").addEventListener("click", () => {
   const link = document.createElement("a");
   link.download = `${activePiece.date}-${slugify(activePiece.title)}.png`;
-  link.href = canvas.toDataURL("image/png");
+  link.href = activeCanvas.toDataURL("image/png");
   link.click();
 });
 
@@ -335,11 +445,11 @@ document.querySelector("#save-alpha").addEventListener("click", () => {
 });
 
 document.querySelector("#copy-shader").addEventListener("click", async () => {
-  await navigator.clipboard.writeText(makePortableShader(activePiece));
+  await navigator.clipboard.writeText(makePortableCode(activePiece));
   const button = document.querySelector("#copy-shader");
   button.textContent = "COPIED";
   window.setTimeout(() => {
-    button.textContent = "GLSL";
+    button.textContent = activePipeline === "canvas2d" ? "CODE" : "GLSL";
   }, 1200);
 });
 
@@ -358,7 +468,8 @@ document.querySelector("#save-project").addEventListener("click", () => {
       u_b: activePiece.palette.slice(3, 6),
     },
     researchSources,
-    shader: makePortableShader(activePiece),
+    pipeline: activePipeline,
+    code: makePortableCode(activePiece),
   };
   downloadText(
     `${activePiece.date}-${slugify(activePiece.title)}.xr-glsl.json`,
@@ -399,6 +510,11 @@ function compileShader(type, source) {
   return shader;
 }
 
+function makePortableCode(piece) {
+  if (getPipeline(piece) === "canvas2d") return makeCanvas2dRecipe(piece);
+  return makePortableShader(piece);
+}
+
 function makePortableShader(piece) {
   return `${baseFragmentShader}
 
@@ -409,6 +525,17 @@ function makePortableShader(piece) {
 // Uniforms expected: u_resolution, u_time, u_loop, u_a, u_b
 // Palette A: vec3(${piece.palette.slice(0, 3).join(", ")})
 // Palette B: vec3(${piece.palette.slice(3, 6).join(", ")})`;
+}
+
+function makeCanvas2dRecipe(piece) {
+  return `// Daily XR/Canvas 2D VJ Loop
+// Date: ${piece.date}
+// Title: ${piece.title}
+// Loop seconds: ${piece.loopSeconds}
+// Palette A: rgb(${rgb(piece.palette.slice(0, 3))})
+// Palette B: rgb(${rgb(piece.palette.slice(3, 6))})
+// Renderer: rings, orbiting glow particles, scanline mesh
+// The site renderer is deterministic from date + title.`;
 }
 
 async function recordLoopVideo() {
@@ -424,7 +551,7 @@ async function recordLoopVideo() {
 
   const button = document.querySelector("#save-video");
   const chunks = [];
-  const stream = canvas.captureStream(60);
+  const stream = activeCanvas.captureStream(60);
   const recorder = new MediaRecorder(stream, {
     mimeType: format.mimeType,
     videoBitsPerSecond: 8_000_000,
@@ -515,7 +642,7 @@ async function recordAlphaVideo() {
 
   const renderAlphaFrame = () => {
     exportContext.clearRect(0, 0, exportCanvas.width, exportCanvas.height);
-    exportContext.drawImage(canvas, 0, 0, exportCanvas.width, exportCanvas.height);
+    exportContext.drawImage(activeCanvas, 0, 0, exportCanvas.width, exportCanvas.height);
     const frame = exportContext.getImageData(0, 0, exportCanvas.width, exportCanvas.height);
     const pixels = frame.data;
     for (let i = 0; i < pixels.length; i += 4) {
@@ -590,11 +717,16 @@ function pickPiece(date) {
   return {
     date,
     title: `Generated Loop ${date.replaceAll("-", ".")}`,
+    pipeline: "glsl",
     loopSeconds: [8, 12, 16, 20][seed % 4],
     palette: [...hsv(hueA, 0.72, 0.92), ...hsv(hueB, 0.68, 0.8)],
     copy: "日付シードから生成される公開用VJループ。常に整数秒の周期で戻るため、素材として扱いやすい。",
     why: "手動更新が止まった日も公開が途切れないよう、日付からGLSLの色と尺を決定する。後から検索メモを足せば、その日のアーカイブとして固定できる。",
   };
+}
+
+function getPipeline(piece) {
+  return piece.pipeline || "glsl";
 }
 
 function offsetDate(days) {
@@ -643,6 +775,10 @@ function hsv(h, s, v) {
     [v, p, q],
   ];
   return table[i % 6].map((n) => Number(n.toFixed(3)));
+}
+
+function rgb(values) {
+  return values.map((value) => Math.round(value * 255)).join(", ");
 }
 
 function slugify(value) {

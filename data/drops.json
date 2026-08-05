@@ -18,7 +18,17 @@
   ],
   "drops": [
     {
+      "date": "2026-08-06",
+      "title": "Radial Type Pulse",
+      "pipeline": "canvas2d",
+      "loopSeconds": 12,
+      "palette": [0.2, 0.95, 0.78, 1.0, 0.64, 0.18],
+      "copy": "Canvas 2Dだけで描く、リング、発光粒子、走査線の無音VJループ。GLSLサンプルとは別の生成パイプラインとして、軽量なWebプレビューと販売用映像生成の橋渡しにする。",
+      "why": "最初の非シェーダーパイプラインとしてCanvas 2Dを選んだ。依存が軽く、ブラウザ上のサンプル表示とMac miniでの固定FPS書き出しの両方へ展開しやすい。描画は日付とタイトルから決定され、12秒で同じ状態に戻るように整数周期のsin/cosだけで構成している。"
+    },
+    {
       "date": "2026-08-05",
+      "pipeline": "glsl",
       "title": "Soft Depth Gate",
       "loopSeconds": 20,
       "palette": [0.95, 0.75, 0.22, 0.18, 0.58, 0.5],
@@ -27,6 +37,7 @@
     },
     {
       "date": "2026-08-04",
+      "pipeline": "glsl",
       "title": "Phase Lattice",
       "loopSeconds": 12,
       "palette": [1.0, 0.35, 0.4, 0.22, 0.7, 0.95],
@@ -35,6 +46,7 @@
     },
     {
       "date": "2026-08-03",
+      "pipeline": "glsl",
       "title": "Orbiting Scan Bloom",
       "loopSeconds": 16,
       "palette": [0.31, 0.82, 0.63, 1.0, 0.8, 0.35],
