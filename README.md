@@ -1,6 +1,6 @@
-# Daily XR GLSL VJ Loops
+# GLSL VJ Site
 
-XR/GLSLプロジェクト形式で、毎日ループするVJ素材を公開する静的サイトです。
+GLSL形式で、毎日ループするVJ素材を公開する静的サイトです。XR表示や販売用映像素材への展開を想定したサンプルサイトです。
 
 ## Run
 
@@ -27,13 +27,6 @@ npm run publish:pages
 
 既に同じ日付の素材がある場合、`daily:update` は何も変更しません。
 
-Canvas 2Dパイプラインの素材を追加する場合:
-
-```sh
-npm run daily:canvas2d -- --date=2026-08-06
-npm run publish:pages
-```
-
 ## Publish Only
 
 ```sh
@@ -49,7 +42,6 @@ npm run publish:pages
 - `date`: `YYYY-MM-DD`
 - `title`: 作品名
 - `loopSeconds`: ループ尺。シェーダーはこの秒数で循環します。
-- `pipeline`: `glsl` または `canvas2d`
 - `palette`: `u_a` と `u_b` に渡すRGB値を6つ並べます。
 - `copy`: 素材説明
 - `why`: 検索メモと採用理由

@@ -1,96 +1,17 @@
 const canvas = document.querySelector("#vj-canvas");
-const gl = canvas.getContext("webgl", {
-  antialias: false,
-  preserveDrawingBuffer: true,
-});
-
+const context = canvas.getContext("2d", { alpha: false });
 const todayIso = localIsoDate(new Date());
 
-let researchSources = [];
+let sources = [];
+let drops = [];
 let purchaseConfig = {
   enabled: false,
   label: "Full Pack",
   url: "",
   note: "映像データの購入先は準備中です。",
 };
-let plannedDrops = [];
-
-const fallbackSources = [
-  {
-    label: "MDN WebXR Device API",
-    url: "https://developer.mozilla.org/en-US/docs/Web/API/WebXR_Device_API",
-    note: "WebXRはVR/AR向けに3Dシーンを適切なフレームレートで描画し、2Dミラー表示も扱える。ただしHTTPS前提かつ対応状況に注意が必要。",
-  },
-  {
-    label: "Khronos OpenGL Registry",
-    url: "https://registry.khronos.org/OpenGL/index_gl.php",
-    note: "GLSL仕様とOpenGLの公式リファレンス確認の起点にした。",
-  },
-];
-
-const baseFragmentShader = `
-precision highp float;
-
-uniform vec2 u_resolution;
-uniform float u_time;
-uniform float u_loop;
-uniform vec3 u_a;
-uniform vec3 u_b;
-
-#define PI 3.141592653589793
-
-mat2 rot(float a) {
-  float s = sin(a);
-  float c = cos(a);
-  return mat2(c, -s, s, c);
-}
-
-float ring(vec2 p, float radius, float width) {
-  return smoothstep(width, 0.0, abs(length(p) - radius));
-}
-
-float bands(vec2 p, float phase) {
-  float v = sin(p.x * 18.0 + phase) + sin(p.y * 13.0 - phase * 0.7);
-  return smoothstep(0.48, 1.0, abs(v) * 0.5);
-}
-
-void main() {
-  vec2 uv = (gl_FragCoord.xy * 2.0 - u_resolution.xy) / min(u_resolution.x, u_resolution.y);
-  float cycle = mod(u_time, u_loop) / u_loop;
-  float phase = cycle * PI * 2.0;
-
-  vec2 p = uv * rot(phase);
-  float pulse = 0.5 + 0.5 * sin(phase);
-  float radial = ring(p, 0.28 + pulse * 0.24, 0.045);
-  radial += ring(p * rot(-phase * 0.6), 0.72, 0.025) * 0.7;
-
-  vec2 q = p;
-  q.x += sin(q.y * 3.0 + phase) * 0.12;
-  q.y += cos(q.x * 2.2 - phase) * 0.10;
-  float lattice = bands(q, phase);
-
-  float scan = smoothstep(0.025, 0.0, abs(fract((uv.y + cycle) * 22.0) - 0.5));
-  float vignette = smoothstep(1.35, 0.25, length(uv));
-  float field = (radial + lattice * 0.55 + scan * 0.28) * vignette;
-
-  vec3 color = mix(u_a, u_b, 0.5 + 0.5 * sin(phase + length(uv) * 3.0));
-  color *= field;
-  color += pow(max(field, 0.0), 2.0) * 0.35;
-
-  gl_FragColor = vec4(color, 1.0);
-}
-`.trim();
-
-const vertexShader = `
-attribute vec2 a_position;
-
-void main() {
-  gl_Position = vec4(a_position, 0.0, 1.0);
-}
-`.trim();
 
 let activePiece;
-let program;
 let animationId = 0;
 let startTime = performance.now();
 let pausedAt = 0;
@@ -100,26 +21,17 @@ let videoRecorder = null;
 let recordingStartedAt = 0;
 let recordingProgressId = 0;
 let alphaFrameId = 0;
-let uniforms;
 
 initialize();
 
 async function initialize() {
-  await loadProjectData();
+  await loadData();
   activePiece = pickPiece(todayIso);
-
-  if (!gl) {
-    document.querySelector(".stage").innerHTML = "<p>WebGLを有効にしてください。</p>";
-    return;
-  }
-
-  setupGl();
   renderContent();
   requestAnimationFrame(draw);
 }
 
-async function loadProjectData() {
-  researchSources = fallbackSources;
+async function loadData() {
   try {
     const [dropsResponse, purchaseResponse] = await Promise.all([
       fetch("./data/drops.json", { cache: "no-store" }),
@@ -128,60 +40,84 @@ async function loadProjectData() {
 
     if (dropsResponse.ok) {
       const data = await dropsResponse.json();
-      if (Array.isArray(data.sources)) researchSources = data.sources;
-      if (Array.isArray(data.drops) && data.drops.length > 0) {
-        plannedDrops = data.drops.sort((a, b) => b.date.localeCompare(a.date));
-      }
+      if (Array.isArray(data.sources)) sources = data.sources;
+      if (Array.isArray(data.drops)) drops = data.drops.sort((a, b) => b.date.localeCompare(a.date));
     }
 
     if (purchaseResponse.ok) {
       purchaseConfig = { ...purchaseConfig, ...(await purchaseResponse.json()) };
     }
   } catch {
-    plannedDrops = [];
+    drops = [];
   }
-}
-
-function setupGl() {
-  program = createProgram(vertexShader, baseFragmentShader);
-  gl.useProgram(program);
-
-  const buffer = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-  gl.bufferData(
-    gl.ARRAY_BUFFER,
-    new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]),
-    gl.STATIC_DRAW,
-  );
-
-  const position = gl.getAttribLocation(program, "a_position");
-  gl.enableVertexAttribArray(position);
-  gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0);
-
-  uniforms = {
-    resolution: gl.getUniformLocation(program, "u_resolution"),
-    time: gl.getUniformLocation(program, "u_time"),
-    loop: gl.getUniformLocation(program, "u_loop"),
-    a: gl.getUniformLocation(program, "u_a"),
-    b: gl.getUniformLocation(program, "u_b"),
-  };
-
-  window.addEventListener("resize", resize);
-  resize();
 }
 
 function draw(now) {
   resize();
+  const width = canvas.width;
+  const height = canvas.height;
   const elapsed = isPaused ? pausedAt : (now - startTime) / 1000;
   const speed = calmMotion ? 0.38 : 1;
+  const cycle = ((elapsed * speed) % activePiece.loopSeconds) / activePiece.loopSeconds;
+  const phase = cycle * Math.PI * 2;
+  const minSide = Math.min(width, height);
+  const seed = hash(`${activePiece.date}:${activePiece.title}`);
+  const paletteA = rgb(activePiece.palette.slice(0, 3));
+  const paletteB = rgb(activePiece.palette.slice(3, 6));
 
-  gl.useProgram(program);
-  gl.uniform2f(uniforms.resolution, canvas.width, canvas.height);
-  gl.uniform1f(uniforms.time, elapsed * speed);
-  gl.uniform1f(uniforms.loop, activePiece.loopSeconds);
-  gl.uniform3f(uniforms.a, activePiece.palette[0], activePiece.palette[1], activePiece.palette[2]);
-  gl.uniform3f(uniforms.b, activePiece.palette[3], activePiece.palette[4], activePiece.palette[5]);
-  gl.drawArrays(gl.TRIANGLES, 0, 6);
+  context.clearRect(0, 0, width, height);
+  context.fillStyle = "#020303";
+  context.fillRect(0, 0, width, height);
+  context.save();
+  context.translate(width / 2, height / 2);
+  context.globalCompositeOperation = "lighter";
+
+  const rings = 7 + (seed % 5);
+  for (let i = 0; i < rings; i += 1) {
+    const t = i / rings;
+    const radius = minSide * (0.12 + t * 0.39 + Math.sin(phase + i) * 0.012);
+    const wobble = Math.sin(phase * (i + 1) + seed * 0.01) * 0.18;
+    context.save();
+    context.rotate(phase * (i % 2 === 0 ? 1 : -1) + wobble);
+    context.strokeStyle = i % 2 === 0 ? paletteA : paletteB;
+    context.globalAlpha = 0.16 + (1 - t) * 0.22;
+    context.lineWidth = Math.max(1, minSide * (0.002 + t * 0.004));
+    context.setLineDash([minSide * (0.012 + t * 0.01), minSide * 0.018]);
+    context.beginPath();
+    context.ellipse(0, 0, radius, radius * (0.58 + t * 0.28), 0, 0, Math.PI * 2);
+    context.stroke();
+    context.restore();
+  }
+
+  for (let i = 0; i < 48; i += 1) {
+    const t = i / 48;
+    const orbit = phase + t * Math.PI * 2;
+    const lane = 0.18 + ((i * 17 + seed) % 100) / 100 * 0.42;
+    const x = Math.cos(orbit * (1 + (i % 3) * 0.2)) * minSide * lane;
+    const y = Math.sin(orbit * (1 - (i % 4) * 0.08)) * minSide * lane * 0.68;
+    const size = minSide * (0.004 + (((i + seed) % 9) / 9) * 0.012);
+    const gradient = context.createRadialGradient(x, y, 0, x, y, size * 4);
+    gradient.addColorStop(0, i % 2 === 0 ? paletteA : paletteB);
+    gradient.addColorStop(1, "rgba(0,0,0,0)");
+    context.globalAlpha = 0.34;
+    context.fillStyle = gradient;
+    context.beginPath();
+    context.arc(x, y, size * 4, 0, Math.PI * 2);
+    context.fill();
+  }
+
+  context.globalCompositeOperation = "source-over";
+  context.globalAlpha = 0.24;
+  context.strokeStyle = "rgba(244,243,237,0.42)";
+  context.lineWidth = Math.max(1, minSide * 0.0015);
+  for (let y = -height / 2; y < height / 2; y += minSide * 0.045) {
+    const offset = Math.sin(phase + y * 0.01) * minSide * 0.018;
+    context.beginPath();
+    context.moveTo(-width / 2, y + offset);
+    context.lineTo(width / 2, y - offset);
+    context.stroke();
+  }
+  context.restore();
 
   animationId = requestAnimationFrame(draw);
 }
@@ -193,7 +129,6 @@ function resize() {
   if (canvas.width !== width || canvas.height !== height) {
     canvas.width = width;
     canvas.height = height;
-    gl.viewport(0, 0, width, height);
   }
 }
 
@@ -204,12 +139,16 @@ function renderContent() {
   document.querySelector("#detail-copy").textContent = activePiece.copy;
   document.querySelector("#loop-length").textContent = `${activePiece.loopSeconds}s`;
   document.querySelector("#why-copy").textContent = activePiece.why;
-  document.querySelector("#shader-code").textContent = makePortableShader(activePiece);
+  document.querySelector("#code-output").textContent = makeRecipe(activePiece);
   renderPurchaseLink(activePiece);
+  renderSources();
+  renderArchive();
+}
 
+function renderSources() {
   const sourceList = document.querySelector("#source-list");
   sourceList.innerHTML = "";
-  researchSources.forEach((source) => {
+  sources.forEach((source) => {
     const li = document.createElement("li");
     const link = document.createElement("a");
     link.href = source.url;
@@ -221,10 +160,12 @@ function renderContent() {
     li.append(link, note);
     sourceList.append(li);
   });
+}
 
+function renderArchive() {
   const archive = document.querySelector("#archive-list");
   archive.innerHTML = "";
-  plannedDrops.forEach((piece) => {
+  drops.forEach((piece) => {
     const item = document.createElement("article");
     item.className = "archive-item";
     const button = document.createElement("button");
@@ -237,7 +178,7 @@ function renderContent() {
       renderContent();
     });
     const small = document.createElement("small");
-    small.textContent = `${piece.date} / ${piece.loopSeconds}s GLSL loop`;
+    small.textContent = `${piece.date} / ${piece.loopSeconds}s Canvas 2D loop`;
     item.append(button, small);
     archive.append(item);
   });
@@ -303,34 +244,28 @@ document.querySelector("#save-alpha").addEventListener("click", () => {
   });
 });
 
-document.querySelector("#copy-shader").addEventListener("click", async () => {
-  await navigator.clipboard.writeText(makePortableShader(activePiece));
-  const button = document.querySelector("#copy-shader");
+document.querySelector("#copy-code").addEventListener("click", async () => {
+  await navigator.clipboard.writeText(makeRecipe(activePiece));
+  const button = document.querySelector("#copy-code");
   button.textContent = "COPIED";
   window.setTimeout(() => {
-    button.textContent = "GLSL";
+    button.textContent = "CODE";
   }, 1200);
 });
 
 document.querySelector("#save-project").addEventListener("click", () => {
   const project = {
-    project: "daily-xr-glsl-vj-loop",
+    project: "daily-canvas-2d-vj-loop",
     version: 1,
     date: activePiece.date,
     title: activePiece.title,
     loopSeconds: activePiece.loopSeconds,
-    uniforms: {
-      u_resolution: "vec2 render target size",
-      u_time: "float seconds",
-      u_loop: activePiece.loopSeconds,
-      u_a: activePiece.palette.slice(0, 3),
-      u_b: activePiece.palette.slice(3, 6),
-    },
-    researchSources,
-    shader: makePortableShader(activePiece),
+    palette: activePiece.palette,
+    sources,
+    recipe: makeRecipe(activePiece),
   };
   downloadText(
-    `${activePiece.date}-${slugify(activePiece.title)}.xr-glsl.json`,
+    `${activePiece.date}-${slugify(activePiece.title)}.canvas2d-vj.json`,
     JSON.stringify(project, null, 2),
     "application/json",
   );
@@ -345,47 +280,11 @@ document.querySelectorAll(".tab").forEach((tab) => {
   });
 });
 
-function createProgram(vertexSource, fragmentSource) {
-  const vertex = compileShader(gl.VERTEX_SHADER, vertexSource);
-  const fragment = compileShader(gl.FRAGMENT_SHADER, fragmentSource);
-  const nextProgram = gl.createProgram();
-  gl.attachShader(nextProgram, vertex);
-  gl.attachShader(nextProgram, fragment);
-  gl.linkProgram(nextProgram);
-  if (!gl.getProgramParameter(nextProgram, gl.LINK_STATUS)) {
-    throw new Error(gl.getProgramInfoLog(nextProgram));
-  }
-  return nextProgram;
-}
-
-function compileShader(type, source) {
-  const shader = gl.createShader(type);
-  gl.shaderSource(shader, source);
-  gl.compileShader(shader);
-  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-    throw new Error(gl.getShaderInfoLog(shader));
-  }
-  return shader;
-}
-
-function makePortableShader(piece) {
-  return `${baseFragmentShader}
-
-// Daily XR/GLSL VJ Loop
-// Date: ${piece.date}
-// Title: ${piece.title}
-// Loop seconds: ${piece.loopSeconds}
-// Uniforms expected: u_resolution, u_time, u_loop, u_a, u_b
-// Palette A: vec3(${piece.palette.slice(0, 3).join(", ")})
-// Palette B: vec3(${piece.palette.slice(3, 6).join(", ")})`;
-}
-
 async function recordLoopVideo() {
   if (videoRecorder?.state === "recording") return;
   if (!canvas.captureStream || !window.MediaRecorder) {
     throw new Error("Canvas video recording is not supported in this browser.");
   }
-
   const format = pickVideoFormat();
   if (!format) throw new Error("No supported MediaRecorder video format was found.");
 
@@ -416,7 +315,6 @@ async function recordLoopVideo() {
   recordingStartedAt = performance.now();
   updateRecordingProgress(button);
   recorder.start(250);
-
   window.setTimeout(() => {
     if (recorder.state === "recording") recorder.stop();
   }, activePiece.loopSeconds * 1000);
@@ -425,8 +323,10 @@ async function recordLoopVideo() {
   cancelAnimationFrame(recordingProgressId);
   stream.getTracks().forEach((track) => track.stop());
 
-  const blob = new Blob(chunks, { type: format.mimeType });
-  downloadBlob(`${activePiece.date}-${slugify(activePiece.title)}.${format.extension}`, blob);
+  downloadBlob(
+    `${activePiece.date}-${slugify(activePiece.title)}.${format.extension}`,
+    new Blob(chunks, { type: format.mimeType }),
+  );
 
   button.classList.remove("is-recording");
   button.textContent = format.extension.toUpperCase();
@@ -440,7 +340,6 @@ async function recordLoopVideo() {
 async function recordAlphaVideo() {
   if (videoRecorder?.state === "recording") return;
   if (!window.MediaRecorder) throw new Error("Video recording is not supported in this browser.");
-
   const format = pickAlphaVideoFormat();
   if (!format) throw new Error("No supported alpha-capable video format was found.");
 
@@ -493,7 +392,6 @@ async function recordAlphaVideo() {
   renderAlphaFrame();
   updateRecordingProgress(button);
   recorder.start(250);
-
   window.setTimeout(() => {
     if (recorder.state === "recording") recorder.stop();
   }, activePiece.loopSeconds * 1000);
@@ -503,8 +401,10 @@ async function recordAlphaVideo() {
   cancelAnimationFrame(recordingProgressId);
   stream.getTracks().forEach((track) => track.stop());
 
-  const blob = new Blob(chunks, { type: format.mimeType });
-  downloadBlob(`${activePiece.date}-${slugify(activePiece.title)}-alpha.${format.extension}`, blob);
+  downloadBlob(
+    `${activePiece.date}-${slugify(activePiece.title)}-alpha.${format.extension}`,
+    new Blob(chunks, { type: format.mimeType }),
+  );
 
   button.classList.remove("is-recording");
   button.textContent = "WEBM";
@@ -543,26 +443,30 @@ function pickAlphaVideoFormat() {
 }
 
 function pickPiece(date) {
-  const direct = plannedDrops.find((piece) => piece.date === date);
+  const direct = drops.find((piece) => piece.date === date);
   if (direct) return direct;
-
   const seed = hash(date);
   const hueA = fract(seed * 0.0183);
   const hueB = fract(hueA + 0.38);
   return {
     date,
-    title: `Generated GLSL Loop ${date.replaceAll("-", ".")}`,
+    title: `Generated Canvas Loop ${date.replaceAll("-", ".")}`,
     loopSeconds: [8, 12, 16, 20][seed % 4],
     palette: [...hsv(hueA, 0.72, 0.92), ...hsv(hueB, 0.68, 0.8)],
-    copy: "日付シードから生成される公開用GLSL VJループ。常に整数秒の周期で戻るため、素材として扱いやすい。",
-    why: "手動更新が止まった日も公開が途切れないよう、日付からGLSLの色と尺を決定する。後から検索メモを足せば、その日のアーカイブとして固定できる。",
+    copy: "日付シードから生成されるCanvas 2D VJループ。軽量なサンプル公開と販売用映像生成の橋渡しにする。",
+    why: "Canvas 2Dは線、粒子、走査線のようなVJ素材を素早く作れる。今日のサンプルは整数周期のsin/cosだけで構成し、ループ終端で同じ状態に戻る設計にした。",
   };
 }
 
-function offsetDate(days) {
-  const date = new Date();
-  date.setDate(date.getDate() + days);
-  return localIsoDate(date);
+function makeRecipe(piece) {
+  return `// Daily Canvas 2D VJ Loop
+// Date: ${piece.date}
+// Title: ${piece.title}
+// Loop seconds: ${piece.loopSeconds}
+// Palette A: rgb(${rgb(piece.palette.slice(0, 3))})
+// Palette B: rgb(${rgb(piece.palette.slice(3, 6))})
+// Renderer: rings, orbiting glow particles, scanline mesh
+// Deterministic seed: date + title`;
 }
 
 function localIsoDate(date) {
@@ -607,13 +511,16 @@ function hsv(h, s, v) {
   return table[i % 6].map((n) => Number(n.toFixed(3)));
 }
 
+function rgb(values) {
+  return values.map((value) => Math.round(value * 255)).join(", ");
+}
+
 function slugify(value) {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 }
 
 function downloadText(filename, text, type) {
-  const blob = new Blob([text], { type });
-  downloadBlob(filename, blob);
+  downloadBlob(filename, new Blob([text], { type }));
 }
 
 function downloadBlob(filename, blob) {

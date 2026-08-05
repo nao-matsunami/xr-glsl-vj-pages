@@ -1,11 +1,11 @@
 :root {
   color-scheme: dark;
-  --bg: #080909;
-  --ink: #f4f3ed;
+  --bg: #070908;
+  --ink: #f7f4ea;
   --muted: #aaa99e;
-  --line: rgba(244, 243, 237, 0.16);
-  --panel: rgba(11, 13, 13, 0.82);
-  --accent: #50d0a0;
+  --line: rgba(247, 244, 234, 0.16);
+  --panel: rgba(10, 13, 12, 0.84);
+  --accent: #58e0b0;
   --accent-2: #ffcf5a;
   --danger: #ff6d66;
   font-family:
@@ -42,7 +42,7 @@ button {
   top: 0;
   height: 100vh;
   overflow: hidden;
-  background: #050606;
+  background: #030504;
 }
 
 #vj-canvas {
@@ -146,8 +146,8 @@ h1 {
 .text-button:hover,
 .tab:hover,
 .tab.is-active {
-  border-color: rgba(80, 208, 160, 0.8);
-  background: rgba(80, 208, 160, 0.16);
+  border-color: rgba(88, 224, 176, 0.8);
+  background: rgba(88, 224, 176, 0.16);
 }
 
 .text-button:disabled {
@@ -158,7 +158,6 @@ h1 {
 .text-button.is-recording {
   border-color: rgba(255, 109, 102, 0.86);
   background: rgba(255, 109, 102, 0.18);
-  color: var(--ink);
 }
 
 .detail-panel {
@@ -241,7 +240,8 @@ h1 {
   font-size: 15px;
 }
 
-.meta-grid span {
+.meta-grid span,
+.archive-item small {
   color: var(--muted);
   font-size: 13px;
   line-height: 1.4;
@@ -266,10 +266,6 @@ h1 {
   display: block;
 }
 
-.tab-panel h3 {
-  font-size: 18px;
-}
-
 .source-list {
   display: grid;
   gap: 10px;
@@ -279,7 +275,7 @@ h1 {
 
 .source-list a {
   color: var(--ink);
-  text-decoration-color: rgba(80, 208, 160, 0.55);
+  text-decoration-color: rgba(88, 224, 176, 0.55);
   text-underline-offset: 4px;
 }
 
@@ -321,10 +317,6 @@ code {
   text-align: left;
 }
 
-.archive-item small {
-  color: var(--muted);
-}
-
 @media (max-width: 900px) {
   .app-shell {
     display: block;
@@ -354,13 +346,5 @@ code {
 
   .meta-grid {
     grid-template-columns: 1fr;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .icon-button,
-  .text-button,
-  .tab {
-    transition: none;
   }
 }

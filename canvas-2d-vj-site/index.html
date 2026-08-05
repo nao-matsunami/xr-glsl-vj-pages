@@ -3,21 +3,21 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>GLSL VJ Site</title>
+    <title>Canvas 2D VJ Site</title>
     <meta
       name="description"
-      content="GLSL形式で、毎日ループするVJ素材と制作メモを公開するサンプルサイト。"
+      content="Canvas 2Dで、毎日ループするVJ素材と制作メモを公開するサンプルサイト。"
     />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
     <main class="app-shell">
-      <section class="stage" aria-label="今日のVJループ">
+      <section class="stage" aria-label="今日のCanvas 2D VJループ">
         <canvas id="vj-canvas"></canvas>
         <div class="stage__shade"></div>
         <div class="topbar">
           <div>
-            <p class="kicker">Daily GLSL VJ Loop</p>
+            <p class="kicker">Daily Canvas 2D VJ Loop</p>
             <h1 id="piece-title">Loading</h1>
           </div>
           <div class="date-pill" id="piece-date"></div>
@@ -32,8 +32,8 @@
           <button class="text-button" id="save-frame" type="button">PNG</button>
           <button class="text-button" id="save-video" type="button">MP4</button>
           <button class="text-button" id="save-alpha" type="button">ALPHA</button>
-          <button class="text-button" id="copy-shader" type="button">GLSL</button>
-          <button class="text-button" id="save-project" type="button">XR</button>
+          <button class="text-button" id="copy-code" type="button">CODE</button>
+          <button class="text-button" id="save-project" type="button">JSON</button>
         </div>
       </section>
 
@@ -55,35 +55,35 @@
             <span>seamless cycle</span>
           </article>
           <article>
-            <p class="section-label">XR</p>
-            <strong>WebGL ready</strong>
-            <span>mirrors cleanly in XR views</span>
+            <p class="section-label">Engine</p>
+            <strong>Canvas 2D</strong>
+            <span>browser-native drawing commands</span>
           </article>
           <article>
             <p class="section-label">Format</p>
-            <strong>Fragment shader</strong>
-            <span>date-seeded uniforms</span>
+            <strong>Canvas recipe</strong>
+            <span>date-seeded drawing state</span>
           </article>
         </div>
 
         <div class="tabs" role="tablist" aria-label="情報">
           <button class="tab is-active" data-tab="why" role="tab" type="button">Why</button>
-          <button class="tab" data-tab="shader" role="tab" type="button">Shader</button>
+          <button class="tab" data-tab="code" role="tab" type="button">Code</button>
           <button class="tab" data-tab="archive" role="tab" type="button">Archive</button>
         </div>
 
         <section class="tab-panel is-active" id="tab-why" role="tabpanel">
-          <h3>検索メモと採用理由</h3>
+          <h3>制作メモと採用理由</h3>
           <p id="why-copy"></p>
           <p class="sample-note">
-            このページはサンプル公開です。MP4やアルファ付きMOVなどの実データは、販売ページが決まり次第リンクします。
+            このページはCanvas 2D VJ素材のサンプル公開です。MP4やアルファ付きMOVなどの実データは、販売ページが決まり次第リンクします。
           </p>
           <ul class="source-list" id="source-list"></ul>
         </section>
 
-        <section class="tab-panel" id="tab-shader" role="tabpanel">
-          <h3>今日のGLSL</h3>
-          <pre><code id="shader-code"></code></pre>
+        <section class="tab-panel" id="tab-code" role="tabpanel">
+          <h3>今日のCanvas 2D</h3>
+          <pre><code id="code-output"></code></pre>
         </section>
 
         <section class="tab-panel" id="tab-archive" role="tabpanel">

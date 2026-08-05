@@ -9,27 +9,23 @@ const dateArg = process.argv.find((arg) => arg.startsWith("--date="));
 const targetDate = dateArg ? dateArg.slice("--date=".length) : localIsoDate(new Date());
 
 const titles = [
-  "Chromatic Return Field",
-  "Signal Bloom Gate",
-  "Phase Tunnel Sweep",
-  "Luma Orbit Mesh",
-  "Scanline Depth Halo",
-  "Vector Drift Bloom",
-  "Soft Feedback Lattice",
-  "Pulse Mirror Well",
+  "Radial Type Pulse",
+  "Orbit Mesh Drawing",
+  "Signal Glyph Sweep",
+  "Luma Thread Field",
+  "Scanline Particle Well",
 ];
 
 const copyLines = [
-  "クラブ投影や配信背景に使いやすい、中心運動と余白を分けた無音VJループ。",
-  "細い走査線とリングの周期をそろえ、短い尺でも切れ目が目立ちにくい素材。",
-  "XRのミラー表示でも端がうるさくなりすぎないよう、明滅の密度を中央寄りにしたループ。",
-  "黒背景に重ねやすい発光系のサンプル。販売用のMP4/MOVパックへのプレビューとして扱う。",
+  "Canvas 2Dだけで描く、発光リングと軌道粒子の無音VJループ。",
+  "軽量なWebプレビューから販売用レンダーへ展開するためのCanvas 2D生成素材。",
+  "GLSLを使わず、描画コマンドと日付シードだけで構成する抽象ループ。",
 ];
 
 const whyLines = [
-  "今日の判断は、WebXRでの2Dミラー表示と通常スクリーン投影の両方で破綻しないことを優先した。GLSLはWebGLで扱いやすい基本関数だけに絞り、`u_loop` 秒で同じ状態へ戻る周期設計にしている。",
-  "VJ素材としての扱いやすさを優先し、BPM同期しやすい整数秒ループにした。高密度なパターンは疲れやすいため、中心の動きと周辺の余白を分けている。",
-  "サンプルページでは軽量なプレビューを見せ、実データは販売リンクへ誘導する前提にした。黒背景をアルファ化しやすいよう、発光部分と背景の輝度差を保っている。",
+  "Canvas 2Dは線、粒子、タイポグラフィ、走査線のようなVJ素材を素早く作れる。今日のサンプルは整数周期のsin/cosだけで構成し、ループ終端で同じ状態に戻る設計にした。",
+  "非シェーダーサイトとしてCanvas 2Dを選んだ。依存が軽く、ブラウザ上のサンプル表示とMac miniでの固定FPS書き出しの両方へ展開しやすい。",
+  "描画コマンドベースの軽量な映像生成を試す。販売用マスターは後でMac mini上の固定FPSレンダリングへ接続する前提にしている。",
 ];
 
 const data = JSON.parse(await fs.readFile(dropsPath, "utf8"));
