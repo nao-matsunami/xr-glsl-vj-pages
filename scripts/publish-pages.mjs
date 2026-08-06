@@ -24,6 +24,7 @@ const excluded = new Set([
   "touchdesigner-vj-site",
   "isf-vj-site",
   "cables-vj-site",
+  "max-jitter-vj-site",
 ]);
 
 async function pathExists(targetPath) {
