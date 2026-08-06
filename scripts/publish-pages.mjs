@@ -23,6 +23,7 @@ const excluded = new Set([
   "hydra-vj-site",
   "touchdesigner-vj-site",
   "isf-vj-site",
+  "cables-vj-site",
 ]);
 
 async function pathExists(targetPath) {
