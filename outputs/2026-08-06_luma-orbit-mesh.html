@@ -5,25 +5,314 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Luma Orbit Mesh / GLSL VJ Site</title>
     <style>
-      :root { color-scheme: dark; --bg: #050607; --ink: #f4f7f8; --muted: #9aa7ac; --line: #263236; }
-      * { box-sizing: border-box; }
-      body { margin: 0; min-height: 100vh; background: var(--bg); color: var(--ink); font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
-      header { min-height: 104px; padding: 18px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 16px; align-items: center; }
-      h1 { margin: 0; font-size: clamp(22px, 4vw, 42px); line-height: 1; }
-      p { margin: 6px 0 0; color: var(--muted); line-height: 1.6; }
-      a { color: var(--ink); }
-      iframe { display: block; width: 100%; height: calc(100vh - 104px); border: 0; background: #000; }
-      @media (max-width: 760px) { header { display: block; } iframe { height: calc(100vh - 142px); } }
+      :root {
+        color-scheme: dark;
+        --bg: #010202;
+        --ink: #f2fbfb;
+        --muted: #91a7aa;
+        --lime: #b7ff47;
+        --cyan: #35eeff;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+      }
+
+      body {
+        margin: 0;
+        overflow: hidden;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      canvas {
+        display: block;
+        width: 100vw;
+        height: 100vh;
+        background: #000;
+      }
+
+      .hud {
+        position: fixed;
+        inset: 18px 18px auto;
+        z-index: 2;
+        display: flex;
+        justify-content: space-between;
+        gap: 18px;
+        pointer-events: none;
+        text-shadow: 0 2px 18px rgba(0, 0, 0, 0.76);
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(21px, 4.4vw, 54px);
+        line-height: 0.96;
+        letter-spacing: 0;
+        text-transform: uppercase;
+      }
+
+      p {
+        margin: 8px 0 0;
+        color: var(--muted);
+        font-size: clamp(12px, 1.4vw, 15px);
+        line-height: 1.55;
+      }
+
+      a {
+        pointer-events: auto;
+        align-self: flex-start;
+        min-width: 112px;
+        padding: 10px 13px;
+        border: 1px solid rgba(242, 251, 251, 0.28);
+        background: rgba(1, 2, 2, 0.44);
+        color: var(--ink);
+        font-size: 12px;
+        line-height: 1;
+        text-align: center;
+        text-decoration: none;
+        backdrop-filter: blur(12px);
+      }
+
+      .meter {
+        position: fixed;
+        right: 18px;
+        bottom: 18px;
+        left: 18px;
+        z-index: 2;
+        height: 2px;
+        overflow: hidden;
+        background: rgba(242, 251, 251, 0.13);
+      }
+
+      .meter span {
+        display: block;
+        width: 100%;
+        height: 100%;
+        transform-origin: left center;
+        background: linear-gradient(90deg, var(--lime), var(--cyan), #ff4ce7);
+        animation: loop-meter 20s linear infinite;
+      }
+
+      @keyframes loop-meter {
+        from { transform: scaleX(0); }
+        to { transform: scaleX(1); }
+      }
+
+      @media (max-width: 680px) {
+        .hud {
+          display: block;
+        }
+
+        a {
+          display: inline-block;
+          margin-top: 12px;
+        }
+      }
     </style>
   </head>
   <body>
-    <header>
+    <canvas id="stage" aria-label="Luma Orbit Mesh looping GLSL visual"></canvas>
+    <div class="hud">
       <div>
         <h1>Luma Orbit Mesh</h1>
-        <p>2026-08-06 / GLSL VJ Site / 20s loop</p>
+        <p>GLSL standalone sample / 2026-08-06 / locked 20 second loop</p>
       </div>
       <a href="../days/2026-08-06.html">Daily report</a>
-    </header>
-    <iframe src="../live.html?date=2026-08-06" title="Luma Orbit Mesh live preview"></iframe>
+    </div>
+    <div class="meter" aria-hidden="true"><span></span></div>
+
+    <script>
+      const canvas = document.querySelector("#stage");
+      const gl = canvas.getContext("webgl", {
+        antialias: true,
+        preserveDrawingBuffer: true,
+      });
+      const loopSeconds = 20;
+      const pointer = { x: 0, y: 0, tx: 0, ty: 0 };
+      let program;
+      let uniforms;
+      let start = performance.now();
+
+      const vertexShader = `
+        attribute vec2 a_position;
+        void main() {
+          gl_Position = vec4(a_position, 0.0, 1.0);
+        }
+      `;
+
+      const fragmentShader = `
+        precision highp float;
+
+        uniform vec2 u_resolution;
+        uniform vec2 u_pointer;
+        uniform float u_time;
+        uniform float u_loop;
+
+        #define PI 3.141592653589793
+
+        mat2 rot(float a) {
+          float s = sin(a);
+          float c = cos(a);
+          return mat2(c, -s, s, c);
+        }
+
+        float hash(vec3 p) {
+          return fract(sin(dot(p, vec3(127.1, 311.7, 74.7))) * 43758.5453123);
+        }
+
+        float meshField(vec3 p, float phase) {
+          p.xy *= rot(phase * 0.11);
+          p.xz *= rot(sin(phase) * 0.32);
+          vec3 q = p;
+          q.xy = mod(q.xy + 0.75, 1.5) - 0.75;
+          float cell = length(q.xy) - 0.035;
+          float orbit = abs(length(p.xy) - (0.68 + sin(p.z * 0.55 + phase) * 0.12)) - 0.018;
+          float rails = min(abs(q.x), abs(q.y)) - 0.012;
+          return min(min(cell, orbit), rails);
+        }
+
+        vec3 palette(float t) {
+          vec3 a = vec3(0.02, 0.94, 1.0);
+          vec3 b = vec3(0.72, 1.0, 0.18);
+          vec3 c = vec3(1.0, 0.24, 0.86);
+          return mix(mix(a, b, smoothstep(0.0, 0.58, t)), c, smoothstep(0.42, 1.0, t));
+        }
+
+        void main() {
+          vec2 uv = (gl_FragCoord.xy * 2.0 - u_resolution.xy) / min(u_resolution.x, u_resolution.y);
+          float cycle = mod(u_time, u_loop) / u_loop;
+          float phase = cycle * PI * 2.0;
+
+          uv += u_pointer * 0.08;
+          vec3 ro = vec3(0.0, 0.08 + u_pointer.y * 0.16, -3.5);
+          vec3 rd = normalize(vec3(uv, 1.72));
+          rd.xy *= rot(sin(phase) * 0.11 + u_pointer.x * 0.08);
+          rd.xz *= rot(cos(phase * 1.5) * 0.13);
+
+          float t = 0.0;
+          float glow = 0.0;
+          float hit = 0.0;
+          float material = 0.0;
+
+          for (int i = 0; i < 88; i++) {
+            vec3 p = ro + rd * t;
+            p.z += cycle * 8.0;
+            float d = meshField(p, phase);
+            float shard = 0.025 / (0.035 + abs(d));
+            glow += shard * exp(-t * 0.045);
+            material += hash(floor(p * 2.1)) * shard * 0.006;
+            if (d < 0.0018) {
+              hit = 1.0;
+              break;
+            }
+            t += max(d * 0.68, 0.012);
+            if (t > 10.0) break;
+          }
+
+          float scan = smoothstep(0.018, 0.0, abs(fract((uv.y + cycle * 1.7) * 34.0) - 0.5));
+          float vignette = smoothstep(1.5, 0.18, length(uv));
+          float pulse = 0.5 + 0.5 * sin(phase * 3.0);
+          vec3 color = palette(fract(cycle + length(uv) * 0.18 + material));
+          vec3 outColor = color * (glow * 0.038 + hit * 0.38 + scan * 0.055);
+          outColor += vec3(0.72, 1.0, 0.18) * pow(pulse, 8.0) * smoothstep(0.36, 0.0, abs(length(uv) - 0.62)) * 0.14;
+          outColor *= vignette;
+          outColor = pow(outColor, vec3(0.88));
+
+          gl_FragColor = vec4(outColor, 1.0);
+        }
+      `;
+
+      if (!gl) {
+        document.body.insertAdjacentHTML("beforeend", "<p>WebGLを有効にしてください。</p>");
+      } else {
+        setup();
+        window.addEventListener("resize", resize);
+        window.addEventListener("pointermove", (event) => {
+          pointer.tx = (event.clientX / window.innerWidth - 0.5) * 2;
+          pointer.ty = (event.clientY / window.innerHeight - 0.5) * -2;
+        });
+        window.addEventListener("click", () => {
+          start = performance.now();
+        });
+        resize();
+        requestAnimationFrame(draw);
+      }
+
+      function setup() {
+        program = createProgram(vertexShader, fragmentShader);
+        gl.useProgram(program);
+        const buffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+        gl.bufferData(
+          gl.ARRAY_BUFFER,
+          new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]),
+          gl.STATIC_DRAW,
+        );
+        const position = gl.getAttribLocation(program, "a_position");
+        gl.enableVertexAttribArray(position);
+        gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0);
+        uniforms = {
+          resolution: gl.getUniformLocation(program, "u_resolution"),
+          pointer: gl.getUniformLocation(program, "u_pointer"),
+          time: gl.getUniformLocation(program, "u_time"),
+          loop: gl.getUniformLocation(program, "u_loop"),
+        };
+      }
+
+      function resize() {
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        const width = Math.max(1, Math.floor(canvas.clientWidth * dpr));
+        const height = Math.max(1, Math.floor(canvas.clientHeight * dpr));
+        if (canvas.width !== width || canvas.height !== height) {
+          canvas.width = width;
+          canvas.height = height;
+          gl.viewport(0, 0, width, height);
+        }
+      }
+
+      function draw(now) {
+        resize();
+        pointer.x += (pointer.tx - pointer.x) * 0.045;
+        pointer.y += (pointer.ty - pointer.y) * 0.045;
+        const elapsed = (now - start) / 1000;
+        gl.useProgram(program);
+        gl.uniform2f(uniforms.resolution, canvas.width, canvas.height);
+        gl.uniform2f(uniforms.pointer, pointer.x, pointer.y);
+        gl.uniform1f(uniforms.time, elapsed);
+        gl.uniform1f(uniforms.loop, loopSeconds);
+        gl.drawArrays(gl.TRIANGLES, 0, 6);
+        requestAnimationFrame(draw);
+      }
+
+      function compile(type, source) {
+        const shader = gl.createShader(type);
+        gl.shaderSource(shader, source);
+        gl.compileShader(shader);
+        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+          throw new Error(gl.getShaderInfoLog(shader) || "Shader compile failed");
+        }
+        return shader;
+      }
+
+      function createProgram(vertexSource, fragmentSource) {
+        const vertex = compile(gl.VERTEX_SHADER, vertexSource);
+        const fragment = compile(gl.FRAGMENT_SHADER, fragmentSource);
+        const nextProgram = gl.createProgram();
+        gl.attachShader(nextProgram, vertex);
+        gl.attachShader(nextProgram, fragment);
+        gl.linkProgram(nextProgram);
+        if (!gl.getProgramParameter(nextProgram, gl.LINK_STATUS)) {
+          throw new Error(gl.getProgramInfoLog(nextProgram) || "Program link failed");
+        }
+        return nextProgram;
+      }
+    </script>
   </body>
 </html>

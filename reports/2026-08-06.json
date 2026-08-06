@@ -57,8 +57,8 @@
     {
       "title": "今日のミニ試作候補",
       "titleEn": "Today's mini prototype candidate",
-      "body": "Luma Orbit Mesh を 20 秒でループするVJサンプルとして固定しました。GitHub Pagesでは軽量プレビューを見せ、販売用のMP4やalpha MOVは選抜後にMac miniで固定FPSレンダーします。",
-      "bodyEn": "Luma Orbit Mesh is fixed as a 20-second looping VJ sample. GitHub Pages carries the lightweight preview, while saleable MP4 and alpha MOV masters should be rendered later on the Mac mini at fixed FPS.",
+      "body": "Luma Orbit Mesh を 20 秒でループする独立WebGL/GLSLサンプルとして固定しました。出力ページ単体にシェーダーを持たせ、黒背景と発光部分の輝度差を強めているため、現場確認、固定FPS録画、黒をアルファ化するMOV候補の選抜に向きます。",
+      "bodyEn": "Luma Orbit Mesh is fixed as a standalone 20-second looping WebGL/GLSL sample. The output page carries its shader directly, with a strong luminance split between black background and glow so it works well for live review, fixed-FPS recording, and black-to-alpha MOV selection.",
       "links": [
         {
           "label": "Today's sample",
