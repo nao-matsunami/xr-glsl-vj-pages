@@ -28,6 +28,7 @@ const excluded = new Set([
   "resolume-ffgl-vj-site",
   "resolume-wire-vj-site",
   "processing-vj-site",
+  "openframeworks-vj-site",
 ]);
 
 async function pathExists(targetPath) {
