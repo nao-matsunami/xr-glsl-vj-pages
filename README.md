@@ -27,6 +27,24 @@ npm run publish:pages
 
 既に同じ日付の素材がある場合、`daily:update` は何も変更しません。
 
+## Daily Research Workflow
+
+複数プロジェクトへ、その日の調査メモを同じ形式で入れられます。
+
+```sh
+npm run daily:research -- --date=2026-08-24 --project=core --notes-file=research/daily-notes.example.json
+```
+
+`--project=core` は `glsl`, `canvas2d`, `threejs`, `svgcss`, `python`, `p5js`, `godot`, `unity` を対象にします。全プロジェクトを対象にする場合は `--project=all` を使います。
+
+調査メモを入れて公開まで一括で行う場合:
+
+```sh
+npm run daily:publish:all -- --date=2026-08-24 --project=core --notes-file=research/daily-notes.example.json
+```
+
+`research/daily-notes.example.json` を雛形にして、私がその日の検索結果・要約・出典を入れる運用です。GitHub Actionsだけで自動Web検索するには検索APIキーが必要なので、現状はCodex作業時に検索して反映する方式にしています。
+
 ## Publish Only
 
 ```sh

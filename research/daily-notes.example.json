@@ -1,0 +1,19 @@
+{
+  "date": "2026-08-24",
+  "projects": {
+    "default": {
+      "summary": "今日の検索では、軽量なWebプレビューはGitHub Pagesへ置き、販売用の高解像度MP4/MOVは外部販売先へ置く運用を継続する判断にした。",
+      "sources": [
+        {
+          "label": "Source label",
+          "url": "https://example.com/",
+          "note": "検索・確認した内容の短い要約。"
+        }
+      ]
+    },
+    "glsl": {
+      "summary": "GLSLはWebGLでそのまま試せるため、サンプル公開とシェーダー販売の橋渡しに向く。",
+      "sources": []
+    }
+  }
+}
