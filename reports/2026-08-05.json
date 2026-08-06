@@ -1,0 +1,57 @@
+{
+  "date": "2026-08-05",
+  "headline": "Soft Depth Gate",
+  "headlineEn": "Soft Depth Gate",
+  "summary": "奥行きゲートのように前後するリングを20秒で循環。背景映像に重ねても情報量が増えすぎない。",
+  "summaryEn": "奥行きゲートのように前後するリングを20秒で循環。背景映像に重ねても情報量が増えすぎない。",
+  "links": [
+    {
+      "label": "Today's sample",
+      "url": "../outputs/2026-08-05_soft-depth-gate.html"
+    },
+    {
+      "label": "Live preview",
+      "url": "../live.html"
+    },
+    {
+      "label": "MDN WebXR Device API",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/WebXR_Device_API"
+    },
+    {
+      "label": "Khronos OpenGL Registry",
+      "url": "https://registry.khronos.org/OpenGL/index_gl.php"
+    },
+    {
+      "label": "Khronos OpenGL ES / GLSL Reference Pages",
+      "url": "https://registry.khronos.org/OpenGL-Refpages/index.php"
+    }
+  ],
+  "sections": [
+    {
+      "title": "今日の制作メモ",
+      "titleEn": "Production note",
+      "body": "XR素材では立体感の示唆が有効だが、実際のヘッドセット表示では過密な高周波パターンが疲れやすい。そこで低周波のリングと暗い余白を主体にした。",
+      "bodyEn": "XR素材では立体感の示唆が有効だが、実際のヘッドセット表示では過密な高周波パターンが疲れやすい。そこで低周波のリングと暗い余白を主体にした。",
+      "links": [
+        {
+          "label": "MDN WebXR Device API",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/WebXR_Device_API"
+        },
+        {
+          "label": "Khronos OpenGL Registry",
+          "url": "https://registry.khronos.org/OpenGL/index_gl.php"
+        },
+        {
+          "label": "Khronos OpenGL ES / GLSL Reference Pages",
+          "url": "https://registry.khronos.org/OpenGL-Refpages/index.php"
+        }
+      ]
+    },
+    {
+      "title": "販売用データへの展開",
+      "titleEn": "Sales package route",
+      "body": "GLSL VJ Site はGitHub Pages上では軽量なサンプルとして公開し、MP4、alpha MOV、プロジェクトファイルなどの重い販売データはGumroadまたはPatreonへ置く前提です。",
+      "bodyEn": "GLSL VJ Site is published on GitHub Pages as a lightweight sample. Heavy saleable files such as MP4, alpha MOV, and project files should live on Gumroad or Patreon."
+    }
+  ]
+}

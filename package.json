@@ -4,6 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "build": "node scripts/build-gallery.mjs",
+    "build:gallery": "node scripts/build-gallery.mjs",
+    "upsert:report": "node scripts/upsert-report.mjs",
     "daily:update": "node scripts/upsert-daily-drop.mjs",
     "daily:research": "node scripts/apply-daily-research.mjs",
     "daily:publish:all": "node scripts/daily-publish-all.mjs",

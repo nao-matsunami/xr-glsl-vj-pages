@@ -1,0 +1,57 @@
+{
+  "date": "2026-08-04",
+  "headline": "Phase Lattice",
+  "headlineEn": "Phase Lattice",
+  "summary": "格子の位相をずらしながら、12秒で完全に戻るパターン。BPMに同期させやすい短い尺を想定。",
+  "summaryEn": "格子の位相をずらしながら、12秒で完全に戻るパターン。BPMに同期させやすい短い尺を想定。",
+  "links": [
+    {
+      "label": "Today's sample",
+      "url": "../outputs/2026-08-04_phase-lattice.html"
+    },
+    {
+      "label": "Live preview",
+      "url": "../live.html"
+    },
+    {
+      "label": "MDN WebXR Device API",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/WebXR_Device_API"
+    },
+    {
+      "label": "Khronos OpenGL Registry",
+      "url": "https://registry.khronos.org/OpenGL/index_gl.php"
+    },
+    {
+      "label": "Khronos OpenGL ES / GLSL Reference Pages",
+      "url": "https://registry.khronos.org/OpenGL-Refpages/index.php"
+    }
+  ],
+  "sections": [
+    {
+      "title": "今日の制作メモ",
+      "titleEn": "Production note",
+      "body": "翌日の素材は、リズムに合わせて切り替えやすい短尺ループを優先した。sin/cosの整数周期だけで動きを閉じ、VJソフトに取り込んでも始点と終点の違和感が出にくい構成にした。",
+      "bodyEn": "翌日の素材は、リズムに合わせて切り替えやすい短尺ループを優先した。sin/cosの整数周期だけで動きを閉じ、VJソフトに取り込んでも始点と終点の違和感が出にくい構成にした。",
+      "links": [
+        {
+          "label": "MDN WebXR Device API",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/WebXR_Device_API"
+        },
+        {
+          "label": "Khronos OpenGL Registry",
+          "url": "https://registry.khronos.org/OpenGL/index_gl.php"
+        },
+        {
+          "label": "Khronos OpenGL ES / GLSL Reference Pages",
+          "url": "https://registry.khronos.org/OpenGL-Refpages/index.php"
+        }
+      ]
+    },
+    {
+      "title": "販売用データへの展開",
+      "titleEn": "Sales package route",
+      "body": "GLSL VJ Site はGitHub Pages上では軽量なサンプルとして公開し、MP4、alpha MOV、プロジェクトファイルなどの重い販売データはGumroadまたはPatreonへ置く前提です。",
+      "bodyEn": "GLSL VJ Site is published on GitHub Pages as a lightweight sample. Heavy saleable files such as MP4, alpha MOV, and project files should live on Gumroad or Patreon."
+    }
+  ]
+}

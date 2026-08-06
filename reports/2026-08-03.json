@@ -1,0 +1,57 @@
+{
+  "date": "2026-08-03",
+  "headline": "Orbiting Scan Bloom",
+  "headlineEn": "Orbiting Scan Bloom",
+  "summary": "細い走査線、円軌道、低速の色相変化を重ねたクラブ投影向けの無音ループ。XRのミラー表示でも視線誘導が強すぎないよう、中心密度と周辺の余白を分けている。",
+  "summaryEn": "細い走査線、円軌道、低速の色相変化を重ねたクラブ投影向けの無音ループ。XRのミラー表示でも視線誘導が強すぎないよう、中心密度と周辺の余白を分けている。",
+  "links": [
+    {
+      "label": "Today's sample",
+      "url": "../outputs/2026-08-03_orbiting-scan-bloom.html"
+    },
+    {
+      "label": "Live preview",
+      "url": "../live.html"
+    },
+    {
+      "label": "MDN WebXR Device API",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/WebXR_Device_API"
+    },
+    {
+      "label": "Khronos OpenGL Registry",
+      "url": "https://registry.khronos.org/OpenGL/index_gl.php"
+    },
+    {
+      "label": "Khronos OpenGL ES / GLSL Reference Pages",
+      "url": "https://registry.khronos.org/OpenGL-Refpages/index.php"
+    }
+  ],
+  "sections": [
+    {
+      "title": "今日の制作メモ",
+      "titleEn": "Production note",
+      "body": "今日の軸は「WebXRでも通常スクリーンでも破綻しないGLSL素材」。MDNのWebXR資料ではXR表示と2Dミラーの両方が重要になるため、画面端まで細部を置きすぎず、中央の周期運動を主役にした。GLSLはKhronosの仕様・参照ページを基準に、WebGLで扱いやすい基本関数だけで構成した。",
+      "bodyEn": "今日の軸は「WebXRでも通常スクリーンでも破綻しないGLSL素材」。MDNのWebXR資料ではXR表示と2Dミラーの両方が重要になるため、画面端まで細部を置きすぎず、中央の周期運動を主役にした。GLSLはKhronosの仕様・参照ページを基準に、WebGLで扱いやすい基本関数だけで構成した。",
+      "links": [
+        {
+          "label": "MDN WebXR Device API",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/WebXR_Device_API"
+        },
+        {
+          "label": "Khronos OpenGL Registry",
+          "url": "https://registry.khronos.org/OpenGL/index_gl.php"
+        },
+        {
+          "label": "Khronos OpenGL ES / GLSL Reference Pages",
+          "url": "https://registry.khronos.org/OpenGL-Refpages/index.php"
+        }
+      ]
+    },
+    {
+      "title": "販売用データへの展開",
+      "titleEn": "Sales package route",
+      "body": "GLSL VJ Site はGitHub Pages上では軽量なサンプルとして公開し、MP4、alpha MOV、プロジェクトファイルなどの重い販売データはGumroadまたはPatreonへ置く前提です。",
+      "bodyEn": "GLSL VJ Site is published on GitHub Pages as a lightweight sample. Heavy saleable files such as MP4, alpha MOV, and project files should live on Gumroad or Patreon."
+    }
+  ]
+}
