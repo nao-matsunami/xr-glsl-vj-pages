@@ -7,7 +7,7 @@ import { selectProjects } from "./project-registry.mjs";
 const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const args = parseArgs(process.argv.slice(2));
 const targetDate = args.date || localIsoDate(new Date());
-const selected = selectProjects(args.project || "core");
+const selected = selectProjects(args.project || "starter");
 const notes = args["notes-file"] ? await readNotesFile(args["notes-file"]) : null;
 const inlineSources = collectInlineSources(args.source);
 

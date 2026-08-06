@@ -6,13 +6,15 @@ import { selectProjects } from "./project-registry.mjs";
 const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const args = parseArgs(process.argv.slice(2));
 const targetDate = args.date || localIsoDate(new Date());
-const selected = selectProjects(args.project || "core");
+const selected = selectProjects(args.project || "starter");
 
-await run("node", ["scripts/apply-daily-research.mjs", `--date=${targetDate}`, `--project=${selected.map((project) => project.slug).join(",")}`, ...(args["notes-file"] ? [`--notes-file=${args["notes-file"]}`] : [])], rootDir);
-
-for (const project of selected) {
-  await run("npm", ["run", "publish:pages"], path.join(rootDir, project.path));
-}
+await run("node", [
+  "scripts/upsert-vj-report-sample.mjs",
+  `--date=${targetDate}`,
+  `--project=${selected.map((project) => project.slug).join(",")}`,
+  "--publish",
+  ...(args["notes-file"] ? [`--notes-file=${args["notes-file"]}`] : []),
+], rootDir);
 
 function parseArgs(argv) {
   const out = {};

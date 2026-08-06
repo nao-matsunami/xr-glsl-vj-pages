@@ -51,20 +51,32 @@ cat /tmp/report.json | npm run upsert:report -- --stdin --publish
 
 VJ系サイトはすべてこの構成へ移行済みです。新しい日次更新では、単なる `data/drops.json` 追加ではなく、調査済みの `reports/YYYY-MM-DD.json` と自作サンプル `outputs/YYYY-MM-DD_*.html` を残す方針にします。
 
+最初の6サイトをまとめて日次更新する場合:
+
+```sh
+npm run daily:starter -- --date=2026-08-24 --notes-file=research/daily-notes.example.json
+```
+
+公開まで一括で行う場合:
+
+```sh
+npm run daily:starter:publish -- --date=2026-08-24 --notes-file=research/daily-notes.example.json
+```
+
 ## Daily Research Workflow
 
 複数プロジェクトへ、その日の調査メモを同じ形式で入れられます。
 
 ```sh
-npm run daily:research -- --date=2026-08-24 --project=core --notes-file=research/daily-notes.example.json
+npm run daily:research -- --date=2026-08-24 --project=starter --notes-file=research/daily-notes.example.json
 ```
 
-`--project=core` は `glsl`, `canvas2d`, `threejs`, `svgcss`, `python`, `p5js`, `godot`, `unity` を対象にします。全プロジェクトを対象にする場合は `--project=all` を使います。
+`--project=starter` は最初に毎日更新する対象として、`glsl`, `canvas2d`, `threejs`, `svgcss`, `python`, `p5js` を扱います。`--project=core` はそれに `godot`, `unity` を加えます。全プロジェクトを対象にする場合は `--project=all` を使います。
 
 調査メモを入れて公開まで一括で行う場合:
 
 ```sh
-npm run daily:publish:all -- --date=2026-08-24 --project=core --notes-file=research/daily-notes.example.json
+npm run daily:publish:all -- --date=2026-08-24 --project=starter --notes-file=research/daily-notes.example.json
 ```
 
 `research/daily-notes.example.json` を雛形にして、私がその日の検索結果・要約・出典を入れる運用です。GitHub Actionsだけで自動Web検索するには検索APIキーが必要なので、現状はCodex作業時に検索して反映する方式にしています。

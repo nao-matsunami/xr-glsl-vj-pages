@@ -21,12 +21,13 @@ export const projects = [
 ];
 
 export const groups = {
+  starter: ["glsl", "canvas2d", "threejs", "svgcss", "python", "p5js"],
   core: ["glsl", "canvas2d", "threejs", "svgcss", "python", "p5js", "godot", "unity"],
   saleable: ["blender", "touchdesigner", "resolume-wire", "isf", "threejs", "webgpu"],
   all: projects.map((project) => project.slug),
 };
 
-export function selectProjects(value = "core") {
+export function selectProjects(value = "starter") {
   const names = value.split(",").map((item) => item.trim()).filter(Boolean);
   const slugs = names.flatMap((name) => groups[name] || [name]);
   const selected = projects.filter((project) => slugs.includes(project.slug));
