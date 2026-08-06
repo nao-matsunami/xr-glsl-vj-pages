@@ -1,0 +1,70 @@
+{
+  "date": "2026-08-06",
+  "headline": "Luma Orbit Mesh",
+  "headlineEn": "Luma Orbit Mesh",
+  "summary": "黒背景に重ねやすい発光系のサンプル。販売用のMP4/MOVパックへのプレビューとして扱う。",
+  "summaryEn": "黒背景に重ねやすい発光系のサンプル。販売用のMP4/MOVパックへのプレビューとして扱う。",
+  "links": [
+    {
+      "label": "Today's sample",
+      "url": "../outputs/2026-08-06_luma-orbit-mesh.html"
+    },
+    {
+      "label": "Live preview",
+      "url": "../live.html"
+    },
+    {
+      "label": "MDN WebXR Device API",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/WebXR_Device_API"
+    },
+    {
+      "label": "Khronos OpenGL Registry",
+      "url": "https://registry.khronos.org/OpenGL/index_gl.php"
+    },
+    {
+      "label": "Khronos OpenGL ES / GLSL Reference Pages",
+      "url": "https://registry.khronos.org/OpenGL-Refpages/index.php"
+    }
+  ],
+  "sections": [
+    {
+      "title": "今日の制作メモ",
+      "titleEn": "Production note",
+      "body": "サンプルページでは軽量なプレビューを見せ、実データは販売リンクへ誘導する前提にした。黒背景をアルファ化しやすいよう、発光部分と背景の輝度差を保っている。",
+      "bodyEn": "サンプルページでは軽量なプレビューを見せ、実データは販売リンクへ誘導する前提にした。黒背景をアルファ化しやすいよう、発光部分と背景の輝度差を保っている。",
+      "links": [
+        {
+          "label": "MDN WebXR Device API",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/WebXR_Device_API"
+        },
+        {
+          "label": "Khronos OpenGL Registry",
+          "url": "https://registry.khronos.org/OpenGL/index_gl.php"
+        },
+        {
+          "label": "Khronos OpenGL ES / GLSL Reference Pages",
+          "url": "https://registry.khronos.org/OpenGL-Refpages/index.php"
+        }
+      ]
+    },
+    {
+      "title": "Daily Research 2026-08-06",
+      "titleEn": "Daily Research 2026-08-06",
+      "body": "GLSLはWebGLでそのまま試せるため、サンプル公開とシェーダー販売の橋渡しに向く。",
+      "bodyEn": "GLSLはWebGLでそのまま試せるため、サンプル公開とシェーダー販売の橋渡しに向く。",
+      "links": []
+    },
+    {
+      "title": "今日のミニ試作候補",
+      "titleEn": "Today's mini prototype candidate",
+      "body": "Luma Orbit Mesh を 20 秒でループするVJサンプルとして固定しました。GitHub Pagesでは軽量プレビューを見せ、販売用のMP4やalpha MOVは選抜後にMac miniで固定FPSレンダーします。",
+      "bodyEn": "Luma Orbit Mesh is fixed as a 20-second looping VJ sample. GitHub Pages carries the lightweight preview, while saleable MP4 and alpha MOV masters should be rendered later on the Mac mini at fixed FPS.",
+      "links": [
+        {
+          "label": "Today's sample",
+          "url": "../outputs/2026-08-06_luma-orbit-mesh.html"
+        }
+      ]
+    }
+  ]
+}
