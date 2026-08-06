@@ -22,6 +22,7 @@ const excluded = new Set([
   "webgpu-vj-site",
   "hydra-vj-site",
   "touchdesigner-vj-site",
+  "isf-vj-site",
 ]);
 
 async function pathExists(targetPath) {
