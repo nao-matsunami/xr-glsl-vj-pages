@@ -4,7 +4,7 @@ const gl = canvas.getContext("webgl", {
   preserveDrawingBuffer: true,
 });
 
-const todayIso = localIsoDate(new Date());
+const initialIso = new URLSearchParams(window.location.search).get("date") || localIsoDate(new Date());
 
 let researchSources = [];
 let purchaseConfig = {
@@ -106,7 +106,7 @@ initialize();
 
 async function initialize() {
   await loadProjectData();
-  activePiece = pickPiece(todayIso);
+  activePiece = pickPiece(initialIso);
 
   if (!gl) {
     document.querySelector(".stage").innerHTML = "<p>WebGLを有効にしてください。</p>";
