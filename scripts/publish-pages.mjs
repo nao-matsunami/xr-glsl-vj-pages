@@ -29,6 +29,8 @@ const excluded = new Set([
   "resolume-wire-vj-site",
   "processing-vj-site",
   "openframeworks-vj-site",
+  "godot-vj-site",
+  "unity-vj-site",
 ]);
 
 async function pathExists(targetPath) {
