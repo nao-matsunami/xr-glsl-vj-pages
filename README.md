@@ -12,7 +12,7 @@ Open `http://localhost:4184/`.
 
 ## Daily Publish
 
-今日の素材を `data/drops.json` に追加して、そのままGitHub Pagesへ公開します。
+旧方式では、今日の素材を `data/drops.json` に追加して、そのままGitHub Pagesへ公開します。
 
 ```sh
 npm run daily:publish
@@ -26,6 +26,30 @@ npm run publish:pages
 ```
 
 既に同じ日付の素材がある場合、`daily:update` は何も変更しません。
+
+## Report Style Daily Publish
+
+現在の標準運用は、既存の `webgl-xr-daily-report-pages` / `xr-ar-vr-showcase-pages` と同じ形式です。
+
+- `reports/YYYY-MM-DD.json`: その日の調査レポート
+- `outputs/YYYY-MM-DD_*.html`: その日の自作サンプル
+- `days/YYYY-MM-DD.html`: 日別ページ。`build:gallery` で生成
+- `pages/2.html` 以降: 一覧ページ。`build:gallery` で生成
+- `live.html`: 旧トップページのライブプレビュー
+
+日次レポートJSONを追加して、一覧再生成と公開まで行う場合:
+
+```sh
+npm run upsert:report -- --file reports/2026-08-24.json --publish
+```
+
+JSONを標準入力で渡す場合:
+
+```sh
+cat /tmp/report.json | npm run upsert:report -- --stdin --publish
+```
+
+VJ系サイトはすべてこの構成へ移行済みです。新しい日次更新では、単なる `data/drops.json` 追加ではなく、調査済みの `reports/YYYY-MM-DD.json` と自作サンプル `outputs/YYYY-MM-DD_*.html` を残す方針にします。
 
 ## Daily Research Workflow
 
