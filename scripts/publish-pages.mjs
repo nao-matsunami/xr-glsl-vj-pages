@@ -25,6 +25,7 @@ const excluded = new Set([
   "isf-vj-site",
   "cables-vj-site",
   "max-jitter-vj-site",
+  "resolume-ffgl-vj-site",
 ]);
 
 async function pathExists(targetPath) {
