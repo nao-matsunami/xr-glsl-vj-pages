@@ -17,6 +17,7 @@ const excluded = new Set([
   "three-js-vj-site",
   "svg-css-vj-site",
   "python-vj-site",
+  "blender-generative-lab",
   "blender-vj-site",
   "p5-js-vj-site",
   "webgpu-vj-site",
