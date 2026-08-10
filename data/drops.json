@@ -18,6 +18,29 @@
   ],
   "drops": [
     {
+      "date": "2026-08-10",
+      "title": "Scanline Depth Halo",
+      "loopSeconds": 8,
+      "palette": [
+        0.92,
+        0.736,
+        0.258,
+        0.256,
+        0.799,
+        0.8
+      ],
+      "copy": "クラブ投影や配信背景に使いやすい、中心運動と余白を分けた無音VJループ。",
+      "why": "今日の判断は、WebXRでの2Dミラー表示と通常スクリーン投影の両方で破綻しないことを優先した。GLSLはWebGLで扱いやすい基本関数だけに絞り、`u_loop` 秒で同じ状態へ戻る周期設計にしている。",
+      "research": [
+        {
+          "date": "2026-08-10",
+          "summary": "GLSL VJ Site の日次レポートを追加。追加調査がある日は --notes-file で検索要約と出典を差し込む。",
+          "sources": [],
+          "updatedAt": "2026-08-10T06:27:43.067Z"
+        }
+      ]
+    },
+    {
       "date": "2026-08-06",
       "title": "Luma Orbit Mesh",
       "loopSeconds": 20,

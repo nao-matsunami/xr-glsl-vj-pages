@@ -1,0 +1,11 @@
+import os
+import runpy
+from pathlib import Path
+
+PROJECT_ROOT = Path("/Users/nao/Documents/Codex/2026-08-03-xr-glsl-vj/blender-generative-lab")
+os.environ['BLENDER_LAB_ROOT'] = str(PROJECT_ROOT)
+
+print("Running voronoi")
+runpy.run_path(str(PROJECT_ROOT / "offline/generate_voronoi_light_shell.py"), run_name='__main__')
+
+print("Completed voronoi")
