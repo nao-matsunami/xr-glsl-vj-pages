@@ -18,6 +18,40 @@
   ],
   "drops": [
     {
+      "date": "2026-08-11",
+      "title": "Pulse Mirror Well",
+      "loopSeconds": 20,
+      "palette": [
+        0.258,
+        0.729,
+        0.92,
+        0.8,
+        0.256,
+        0.491
+      ],
+      "copy": "黒背景に重ねやすい発光系のサンプル。販売用のMP4/MOVパックへのプレビューとして扱う。",
+      "why": "サンプルページでは軽量なプレビューを見せ、実データは販売リンクへ誘導する前提にした。黒背景をアルファ化しやすいよう、発光部分と背景の輝度差を保っている。",
+      "research": [
+        {
+          "date": "2026-08-11",
+          "summary": "今日はWebXRや通常スクリーン投影の両方で破綻しにくいGLSL表現を優先した。中心運動と暗い余白を分けると、背景合成やアルファ化の素材として扱いやすい。",
+          "sources": [
+            {
+              "label": "MDN WebXR Device API",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/API/WebXR_Device_API",
+              "note": "XR表示とブラウザ要件の確認に使う。"
+            },
+            {
+              "label": "Khronos OpenGL ES Reference Pages",
+              "url": "https://registry.khronos.org/OpenGL-Refpages/es3/",
+              "note": "WebGL寄りの関数確認に使う。"
+            }
+          ],
+          "updatedAt": "2026-08-10T21:45:00.692Z"
+        }
+      ]
+    },
+    {
       "date": "2026-08-10",
       "title": "Scanline Depth Halo",
       "loopSeconds": 8,
