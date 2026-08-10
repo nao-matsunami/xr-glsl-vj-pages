@@ -12,6 +12,8 @@ const repo = "nao-matsunami/xr-glsl-vj-pages";
 const excluded = new Set([
   ".git",
   "node_modules",
+  "automation",
+  "logs",
   "pages-work",
   "canvas-2d-vj-site",
   "three-js-vj-site",
