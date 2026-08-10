@@ -24,6 +24,14 @@
     {
       "label": "Khronos OpenGL ES / GLSL Reference Pages",
       "url": "https://registry.khronos.org/OpenGL-Refpages/index.php"
+    },
+    {
+      "label": "Khronos OpenGL Shading Language",
+      "url": "https://registry.khronos.org/OpenGL/specs/gl/GLSLangSpec.4.60.pdf"
+    },
+    {
+      "label": "MDN WebGL API",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API"
     }
   ],
   "sections": [
@@ -50,9 +58,18 @@
     {
       "title": "Daily Research 2026-08-10",
       "titleEn": "Daily Research 2026-08-10",
-      "body": "GLSL VJ Site の日次レポートを追加。追加調査がある日は --notes-file で検索要約と出典を差し込む。",
-      "bodyEn": "GLSL VJ Site の日次レポートを追加。追加調査がある日は --notes-file で検索要約と出典を差し込む。",
-      "links": []
+      "body": "今日はGLSLの周期関数とWebGL互換性を優先した。VJ素材としては、派手なノイズよりもsin/cosで閉じる位相設計の方が録画時に継ぎ目を管理しやすいため、短尺ループに向く。",
+      "bodyEn": "今日はGLSLの周期関数とWebGL互換性を優先した。VJ素材としては、派手なノイズよりもsin/cosで閉じる位相設計の方が録画時に継ぎ目を管理しやすいため、短尺ループに向く。",
+      "links": [
+        {
+          "label": "Khronos OpenGL Shading Language",
+          "url": "https://registry.khronos.org/OpenGL/specs/gl/GLSLangSpec.4.60.pdf"
+        },
+        {
+          "label": "MDN WebGL API",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API"
+        }
+      ]
     },
     {
       "title": "今日のミニ試作候補",

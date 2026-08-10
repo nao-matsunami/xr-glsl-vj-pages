@@ -22,11 +22,20 @@ try {
 
 try {
   console.log(`[${new Date().toISOString()}] Daily starter publish start: ${targetDate}`);
+  const notesFile = args["notes-file"] || path.join("logs", "daily-starter-sites", `${targetDate}-research-notes.json`);
+  if (!args["notes-file"]) {
+    await run("node", [
+      "scripts/create-daily-research-notes.mjs",
+      `--date=${targetDate}`,
+      `--project=${args.project || "starter"}`,
+      `--out=${notesFile}`,
+    ], rootDir);
+  }
   await run("node", [
     "scripts/daily-publish-all.mjs",
     `--project=${args.project || "starter"}`,
     `--date=${targetDate}`,
-    ...(args["notes-file"] ? [`--notes-file=${args["notes-file"]}`] : []),
+    `--notes-file=${notesFile}`,
   ], rootDir);
   console.log(`[${new Date().toISOString()}] Daily starter publish complete: ${targetDate}`);
 } finally {

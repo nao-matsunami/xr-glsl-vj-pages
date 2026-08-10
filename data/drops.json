@@ -34,9 +34,20 @@
       "research": [
         {
           "date": "2026-08-10",
-          "summary": "GLSL VJ Site の日次レポートを追加。追加調査がある日は --notes-file で検索要約と出典を差し込む。",
-          "sources": [],
-          "updatedAt": "2026-08-10T06:27:43.067Z"
+          "summary": "今日はGLSLの周期関数とWebGL互換性を優先した。VJ素材としては、派手なノイズよりもsin/cosで閉じる位相設計の方が録画時に継ぎ目を管理しやすいため、短尺ループに向く。",
+          "sources": [
+            {
+              "label": "Khronos OpenGL Shading Language",
+              "url": "https://registry.khronos.org/OpenGL/specs/gl/GLSLangSpec.4.60.pdf",
+              "note": "GLSLの言語仕様確認に使う基準。"
+            },
+            {
+              "label": "MDN WebGL API",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API",
+              "note": "ブラウザ実装側の制約確認に使う。"
+            }
+          ],
+          "updatedAt": "2026-08-10T07:36:02.966Z"
         }
       ]
     },

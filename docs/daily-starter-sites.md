@@ -43,3 +43,13 @@ launchctl list | grep com.nao.vj-starter-daily
 ```
 
 毎日 06:45 に `npm run daily:starter:auto` を実行する。ログは `logs/daily-starter-sites/launchd.out.log` と `logs/daily-starter-sites/launchd.err.log` に出る。
+
+## 調査メモ
+
+`npm run daily:starter:auto` は、公開前に `scripts/create-daily-research-notes.mjs` を実行し、各系列ごとの日替わり調査メモを `logs/daily-starter-sites/YYYY-MM-DD-research-notes.json` に作る。
+
+通常は公式ドキュメント中心の安定した調査キューを使う。特定の日に検索結果や外部記事を反映したい場合は、手動でnotesファイルを作って渡す。
+
+```sh
+npm run daily:starter:auto -- --date=2026-08-11 --notes-file=notes/2026-08-11.json
+```
