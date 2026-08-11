@@ -18,6 +18,40 @@
   ],
   "drops": [
     {
+      "date": "2026-08-12",
+      "title": "Phase Tunnel Sweep",
+      "loopSeconds": 16,
+      "palette": [
+        0.92,
+        0.258,
+        0.354,
+        0.256,
+        0.8,
+        0.329
+      ],
+      "copy": "XRのミラー表示でも端がうるさくなりすぎないよう、明滅の密度を中央寄りにしたループ。",
+      "why": "VJ素材としての扱いやすさを優先し、BPM同期しやすい整数秒ループにした。高密度なパターンは疲れやすいため、中心の動きと周辺の余白を分けている。",
+      "research": [
+        {
+          "date": "2026-08-12",
+          "summary": "今日はGLSLの周期関数とWebGL互換性を優先した。VJ素材としては、派手なノイズよりもsin/cosで閉じる位相設計の方が録画時に継ぎ目を管理しやすいため、短尺ループに向く。",
+          "sources": [
+            {
+              "label": "Khronos OpenGL Shading Language",
+              "url": "https://registry.khronos.org/OpenGL/specs/gl/GLSLangSpec.4.60.pdf",
+              "note": "GLSLの言語仕様確認に使う基準。"
+            },
+            {
+              "label": "MDN WebGL API",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API",
+              "note": "ブラウザ実装側の制約確認に使う。"
+            }
+          ],
+          "updatedAt": "2026-08-11T21:45:00.755Z"
+        }
+      ]
+    },
+    {
       "date": "2026-08-11",
       "title": "Pulse Mirror Well",
       "loopSeconds": 20,
