@@ -18,6 +18,40 @@
   ],
   "drops": [
     {
+      "date": "2026-08-18",
+      "title": "Scanline Depth Halo",
+      "loopSeconds": 8,
+      "palette": [
+        0.258,
+        0.753,
+        0.92,
+        0.8,
+        0.256,
+        0.511
+      ],
+      "copy": "クラブ投影や配信背景に使いやすい、中心運動と余白を分けた無音VJループ。",
+      "why": "VJ素材としての扱いやすさを優先し、BPM同期しやすい整数秒ループにした。高密度なパターンは疲れやすいため、中心の動きと周辺の余白を分けている。",
+      "research": [
+        {
+          "date": "2026-08-18",
+          "summary": "今日はGLSLの周期関数とWebGL互換性を優先した。VJ素材としては、派手なノイズよりもsin/cosで閉じる位相設計の方が録画時に継ぎ目を管理しやすいため、短尺ループに向く。",
+          "sources": [
+            {
+              "label": "Khronos OpenGL Shading Language",
+              "url": "https://registry.khronos.org/OpenGL/specs/gl/GLSLangSpec.4.60.pdf",
+              "note": "GLSLの言語仕様確認に使う基準。"
+            },
+            {
+              "label": "MDN WebGL API",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API",
+              "note": "ブラウザ実装側の制約確認に使う。"
+            }
+          ],
+          "updatedAt": "2026-08-17T21:45:00.661Z"
+        }
+      ]
+    },
+    {
       "date": "2026-08-17",
       "title": "Signal Bloom Gate",
       "loopSeconds": 12,
