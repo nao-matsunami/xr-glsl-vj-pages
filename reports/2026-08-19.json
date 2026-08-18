@@ -1,0 +1,87 @@
+{
+  "date": "2026-08-19",
+  "headline": "Pulse Mirror Well",
+  "headlineEn": "Pulse Mirror Well",
+  "summary": "黒背景に重ねやすい発光系のサンプル。販売用のMP4/MOVパックへのプレビューとして扱う。",
+  "summaryEn": "黒背景に重ねやすい発光系のサンプル。販売用のMP4/MOVパックへのプレビューとして扱う。",
+  "links": [
+    {
+      "label": "Today's sample",
+      "url": "../outputs/2026-08-19_pulse-mirror-well.html"
+    },
+    {
+      "label": "Live preview",
+      "url": "../live.html"
+    },
+    {
+      "label": "MDN WebXR Device API",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/WebXR_Device_API"
+    },
+    {
+      "label": "Khronos OpenGL Registry",
+      "url": "https://registry.khronos.org/OpenGL/index_gl.php"
+    },
+    {
+      "label": "Khronos OpenGL ES / GLSL Reference Pages",
+      "url": "https://registry.khronos.org/OpenGL-Refpages/index.php"
+    },
+    {
+      "label": "MDN WebXR Device API",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/WebXR_Device_API"
+    },
+    {
+      "label": "Khronos OpenGL ES Reference Pages",
+      "url": "https://registry.khronos.org/OpenGL-Refpages/es3/"
+    }
+  ],
+  "sections": [
+    {
+      "title": "今日の制作メモ",
+      "titleEn": "Production note",
+      "body": "今日の判断は、WebXRでの2Dミラー表示と通常スクリーン投影の両方で破綻しないことを優先した。GLSLはWebGLで扱いやすい基本関数だけに絞り、`u_loop` 秒で同じ状態へ戻る周期設計にしている。",
+      "bodyEn": "今日の判断は、WebXRでの2Dミラー表示と通常スクリーン投影の両方で破綻しないことを優先した。GLSLはWebGLで扱いやすい基本関数だけに絞り、`u_loop` 秒で同じ状態へ戻る周期設計にしている。",
+      "links": [
+        {
+          "label": "MDN WebXR Device API",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/WebXR_Device_API"
+        },
+        {
+          "label": "Khronos OpenGL Registry",
+          "url": "https://registry.khronos.org/OpenGL/index_gl.php"
+        },
+        {
+          "label": "Khronos OpenGL ES / GLSL Reference Pages",
+          "url": "https://registry.khronos.org/OpenGL-Refpages/index.php"
+        }
+      ]
+    },
+    {
+      "title": "Daily Research 2026-08-19",
+      "titleEn": "Daily Research 2026-08-19",
+      "body": "今日はWebXRや通常スクリーン投影の両方で破綻しにくいGLSL表現を優先した。中心運動と暗い余白を分けると、背景合成やアルファ化の素材として扱いやすい。",
+      "bodyEn": "今日はWebXRや通常スクリーン投影の両方で破綻しにくいGLSL表現を優先した。中心運動と暗い余白を分けると、背景合成やアルファ化の素材として扱いやすい。",
+      "links": [
+        {
+          "label": "MDN WebXR Device API",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/WebXR_Device_API"
+        },
+        {
+          "label": "Khronos OpenGL ES Reference Pages",
+          "url": "https://registry.khronos.org/OpenGL-Refpages/es3/"
+        }
+      ]
+    },
+    {
+      "title": "今日のミニ試作候補",
+      "titleEn": "Today's mini prototype candidate",
+      "body": "Pulse Mirror Well を 20 秒でループするVJサンプルとして固定しました。GitHub Pagesでは軽量プレビューを見せ、販売用のMP4やalpha MOVは選抜後にMac miniで固定FPSレンダーします。",
+      "bodyEn": "Pulse Mirror Well is fixed as a 20-second looping VJ sample. GitHub Pages carries the lightweight preview, while saleable MP4 and alpha MOV masters should be rendered later on the Mac mini at fixed FPS.",
+      "links": [
+        {
+          "label": "Today's sample",
+          "url": "../outputs/2026-08-19_pulse-mirror-well.html"
+        }
+      ]
+    }
+  ]
+}
