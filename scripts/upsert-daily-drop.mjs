@@ -8,28 +8,37 @@ const dropsPath = path.join(rootDir, "data", "drops.json");
 const dateArg = process.argv.find((arg) => arg.startsWith("--date="));
 const targetDate = dateArg ? dateArg.slice("--date=".length) : localIsoDate(new Date());
 
-const titles = [
-  "Chromatic Return Field",
-  "Signal Bloom Gate",
-  "Phase Tunnel Sweep",
-  "Luma Orbit Mesh",
-  "Scanline Depth Halo",
-  "Vector Drift Bloom",
-  "Soft Feedback Lattice",
-  "Pulse Mirror Well",
-];
-
-const copyLines = [
-  "クラブ投影や配信背景に使いやすい、中心運動と余白を分けた無音VJループ。",
-  "細い走査線とリングの周期をそろえ、短い尺でも切れ目が目立ちにくい素材。",
-  "XRのミラー表示でも端がうるさくなりすぎないよう、明滅の密度を中央寄りにしたループ。",
-  "黒背景に重ねやすい発光系のサンプル。販売用のMP4/MOVパックへのプレビューとして扱う。",
-];
-
-const whyLines = [
-  "今日の判断は、WebXRでの2Dミラー表示と通常スクリーン投影の両方で破綻しないことを優先した。GLSLはWebGLで扱いやすい基本関数だけに絞り、`u_loop` 秒で同じ状態へ戻る周期設計にしている。",
-  "VJ素材としての扱いやすさを優先し、BPM同期しやすい整数秒ループにした。高密度なパターンは疲れやすいため、中心の動きと周辺の余白を分けている。",
-  "サンプルページでは軽量なプレビューを見せ、実データは販売リンクへ誘導する前提にした。黒背景をアルファ化しやすいよう、発光部分と背景の輝度差を保っている。",
+const families = [
+  {
+    slug: "core-loop",
+    titles: ["Chromatic Return Field", "Signal Bloom Gate", "Phase Tunnel Sweep", "Luma Orbit Mesh", "Scanline Depth Halo", "Vector Drift Bloom", "Soft Feedback Lattice", "Pulse Mirror Well"],
+    copy: "クラブ投影や配信背景に使いやすい、中心運動と余白を分けた無音VJループ。",
+    why: "既存系列として、短い周期、中心運動、暗い余白、発光差を維持する。variantで日ごとのパターン差を増やしつつ、シリーズとして見える統一感を残している。",
+  },
+  {
+    slug: "raymarch-objects",
+    titles: ["Distance Shell Bloom", "Raymarch Vessel Gate", "Organic SDF Core", "Torus Object Drift", "Box Field Apparition"],
+    copy: "距離関数で立体物を作る、オブジェクト感の強いGLSL VJループ。",
+    why: "core-loopとは別文脈として、平面パターンではなく3D距離関数の立体感を主役にする。Three.jsやBlenderで反応が良かった有機的オブジェクト方向へつなげやすい。",
+  },
+  {
+    slug: "feedback-fields",
+    titles: ["Recursive Feedback Bloom", "Mirror Delay Field", "Afterimage Signal Well", "Folded Echo Lattice", "Residual Light Net"],
+    copy: "残像、折り返し、擬似フィードバックを主役にしたGLSLループ。",
+    why: "VJ現場で使いやすいフィードバック感を別系列にする。実際のフレームバッファフィードバックではなく、日次公開で安定する擬似残像として実装する。",
+  },
+  {
+    slug: "typographic-signals",
+    titles: ["Glyph Scanner Array", "Signal Type Grid", "Barcode Phase Score", "Terminal Light Score", "Vector Text Pulse"],
+    copy: "文字、バー、記号、走査線のような情報グラフィック系GLSL素材。",
+    why: "抽象発光素材とは違う、UIやタイポグラフィ寄りの文脈を作る。ロゴモーション、イベント名、配信背景に拡張しやすい系列として分ける。",
+  },
+  {
+    slug: "matte-alpha-tools",
+    titles: ["Alpha Ring Cutter", "Matte Gate Object", "Luma Key Bloom", "Mask Orbit Plate", "Transparent Signal Shell"],
+    copy: "黒背景からアルファ化しやすい、マスクと抜き素材向けのGLSLループ。",
+    why: "販売用MP4/MOVへの展開を考え、黒抜きやアルファMOVにしやすい形状を別系列にする。見た目だけでなく素材化しやすさを設計条件に入れる。",
+  },
 ];
 
 const data = JSON.parse(await fs.readFile(dropsPath, "utf8"));
@@ -41,15 +50,17 @@ if (existing) {
 }
 
 const seed = hash(targetDate);
+const family = families[seed % families.length];
 const hueA = fract(seed * 0.0183);
 const hueB = fract(hueA + 0.38);
 const drop = {
   date: targetDate,
-  title: titles[seed % titles.length],
+  title: family.titles[seed % family.titles.length],
+  family: family.slug,
   loopSeconds: [8, 12, 16, 20][seed % 4],
   palette: [...hsv(hueA, 0.72, 0.92), ...hsv(hueB, 0.68, 0.8)],
-  copy: copyLines[seed % copyLines.length],
-  why: whyLines[seed % whyLines.length],
+  copy: family.copy,
+  why: family.why,
 };
 
 data.drops.unshift(drop);

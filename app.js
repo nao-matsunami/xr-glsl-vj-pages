@@ -182,6 +182,165 @@ void main() {
 }
 `.trim();
 
+const fragmentShaders = {
+  "core-loop": baseFragmentShader,
+  "raymarch-objects": `
+precision highp float;
+uniform vec2 u_resolution;
+uniform float u_time;
+uniform float u_loop;
+uniform float u_variant;
+uniform float u_seed;
+uniform vec3 u_a;
+uniform vec3 u_b;
+#define PI 3.141592653589793
+mat2 rot(float a){float s=sin(a),c=cos(a);return mat2(c,-s,s,c);}
+float sdSphere(vec3 p,float r){return length(p)-r;}
+float sdBox(vec3 p,vec3 b){vec3 q=abs(p)-b;return length(max(q,0.0))+min(max(q.x,max(q.y,q.z)),0.0);}
+float sdTorus(vec3 p,vec2 t){vec2 q=vec2(length(p.xz)-t.x,p.y);return length(q)-t.y;}
+float mapScene(vec3 p,float phase){
+  float variant=floor(u_variant+0.5);
+  p.xy*=rot(phase*.18+u_seed);
+  p.xz*=rot(phase*.42);
+  if(variant<2.5){
+    vec3 q=p;
+    q.y+=sin(q.x*2.2+phase)*.18;
+    float shell=sdSphere(q,.72+.08*sin(phase*2.0));
+    float cut=sdBox(q,vec3(.92,.18,.92));
+    return max(shell,-cut);
+  }
+  if(variant<5.5){
+    vec3 q=p;
+    q.xy=mod(q.xy+1.0,2.0)-1.0;
+    return min(sdTorus(p,vec2(.72,.035)),sdBox(q,vec3(.13,.13,.34)));
+  }
+  vec3 q=p;
+  q=abs(q)-vec3(.28+.1*sin(phase),.16,.28);
+  return min(sdSphere(q,.18),sdTorus(p,vec2(.62,.025)));
+}
+void main(){
+  vec2 uv=(gl_FragCoord.xy*2.0-u_resolution.xy)/min(u_resolution.x,u_resolution.y);
+  float cycle=mod(u_time,u_loop)/u_loop;
+  float phase=cycle*PI*2.0;
+  vec3 ro=vec3(0.0,0.0,-3.15);
+  vec3 rd=normalize(vec3(uv,1.55));
+  rd.xz*=rot(sin(phase)*.18);
+  rd.yz*=rot(cos(phase)*.12);
+  float t=0.0, glow=0.0, hit=0.0;
+  for(int i=0;i<86;i++){
+    vec3 p=ro+rd*t;
+    p.z+=sin(phase)*.55;
+    float d=mapScene(p,phase);
+    glow+=.016/(.018+abs(d));
+    if(d<.002){hit=1.0;break;}
+    t+=d*.68;
+    if(t>6.8)break;
+  }
+  vec3 color=mix(u_a,u_b,.5+.5*sin(phase+uv.x*2.0+u_seed*6.0));
+  float shade=exp(-t*.18)*hit;
+  vec3 outColor=color*(shade*.95+glow*.045);
+  outColor*=smoothstep(1.42,.18,length(uv));
+  gl_FragColor=vec4(outColor,1.0);
+}`.trim(),
+  "feedback-fields": `
+precision highp float;
+uniform vec2 u_resolution;
+uniform float u_time;
+uniform float u_loop;
+uniform float u_variant;
+uniform float u_seed;
+uniform vec3 u_a;
+uniform vec3 u_b;
+#define PI 3.141592653589793
+mat2 rot(float a){float s=sin(a),c=cos(a);return mat2(c,-s,s,c);}
+float ring(vec2 p,float r,float w){return smoothstep(w,0.0,abs(length(p)-r));}
+float hash(vec2 p){p=fract(p*vec2(123.34,456.21));p+=dot(p,p+45.32);return fract(p.x*p.y);}
+void main(){
+  vec2 uv=(gl_FragCoord.xy*2.0-u_resolution.xy)/min(u_resolution.x,u_resolution.y);
+  float cycle=mod(u_time,u_loop)/u_loop;
+  float phase=cycle*PI*2.0;
+  vec2 p=uv;
+  float variant=floor(u_variant+0.5);
+  float field=0.0;
+  for(int i=0;i<7;i++){
+    float fi=float(i);
+    p=abs(p*rot(.12*sin(phase+fi)+.18+u_seed*.2))-.22-.035*sin(phase+fi);
+    float r=length(p);
+    field+=smoothstep(.032,0.0,abs(r-(.12+.025*fi)))*(1.0-fi*.09);
+  }
+  vec2 grid=floor((uv+1.0)*vec2(18.0,12.0));
+  float noise=hash(grid+floor(cycle*8.0)+u_seed);
+  float gate=smoothstep(.62,.95,sin(phase*2.0+noise*6.2831)*.5+.5);
+  if(variant>3.5)field+=gate*smoothstep(.018,0.0,abs(fract((uv.x+uv.y+cycle)*18.0)-.5))*.55;
+  float scan=smoothstep(.02,0.0,abs(fract((uv.y-cycle)*30.0)-.5));
+  field=(field+scan*.2)*smoothstep(1.35,.18,length(uv));
+  vec3 color=mix(u_a,u_b,.5+.5*sin(phase+field*4.0));
+  gl_FragColor=vec4(color*(field+field*field*.45),1.0);
+}`.trim(),
+  "typographic-signals": `
+precision highp float;
+uniform vec2 u_resolution;
+uniform float u_time;
+uniform float u_loop;
+uniform float u_variant;
+uniform float u_seed;
+uniform vec3 u_a;
+uniform vec3 u_b;
+#define PI 3.141592653589793
+mat2 rot(float a){float s=sin(a),c=cos(a);return mat2(c,-s,s,c);}
+float box(vec2 p,vec2 b){vec2 d=abs(p)-b;return length(max(d,0.0))+min(max(d.x,d.y),0.0);}
+float strokeBox(vec2 p,vec2 b,float w){return smoothstep(w,0.0,abs(box(p,b)));}
+float bar(vec2 p,vec2 a,vec2 b,float w){vec2 pa=p-a,ba=b-a;float h=clamp(dot(pa,ba)/dot(ba,ba),0.0,1.0);return smoothstep(w,0.0,length(pa-ba*h));}
+void main(){
+  vec2 uv=(gl_FragCoord.xy*2.0-u_resolution.xy)/min(u_resolution.x,u_resolution.y);
+  float cycle=mod(u_time,u_loop)/u_loop;
+  float phase=cycle*PI*2.0;
+  vec2 p=uv*rot(.08*sin(phase));
+  float field=0.0;
+  for(int i=0;i<9;i++){
+    float fi=float(i);
+    vec2 g=p+vec2(sin(phase+fi)*.08,(fi-4.0)*.13);
+    g.x=fract(g.x*3.0+cycle+fi*.11)-.5;
+    field+=strokeBox(g,vec2(.18+.03*sin(fi+phase),.035),.012);
+    field+=bar(g,vec2(-.22,.08),vec2(.22,-.08),.01)*.55;
+  }
+  field+=smoothstep(.018,0.0,abs(fract((uv.y+cycle)*44.0)-.5))*.35;
+  field*=smoothstep(1.32,.2,length(uv));
+  vec3 color=mix(u_a,u_b,.5+.5*sin(phase+uv.x*5.0));
+  gl_FragColor=vec4(color*field*(1.0+field*.5),1.0);
+}`.trim(),
+  "matte-alpha-tools": `
+precision highp float;
+uniform vec2 u_resolution;
+uniform float u_time;
+uniform float u_loop;
+uniform float u_variant;
+uniform float u_seed;
+uniform vec3 u_a;
+uniform vec3 u_b;
+#define PI 3.141592653589793
+mat2 rot(float a){float s=sin(a),c=cos(a);return mat2(c,-s,s,c);}
+float ring(vec2 p,float r,float w){return smoothstep(w,0.0,abs(length(p)-r));}
+float box(vec2 p,vec2 b){vec2 d=abs(p)-b;return length(max(d,0.0))+min(max(d.x,d.y),0.0);}
+void main(){
+  vec2 uv=(gl_FragCoord.xy*2.0-u_resolution.xy)/min(u_resolution.x,u_resolution.y);
+  float cycle=mod(u_time,u_loop)/u_loop;
+  float phase=cycle*PI*2.0;
+  vec2 p=uv*rot(phase*.18);
+  float mask=0.0;
+  mask+=ring(p,.32+.08*sin(phase),.035);
+  mask+=ring(p*vec2(1.45,.75),.54,.025)*.8;
+  for(int i=0;i<6;i++){
+    float fi=float(i);
+    vec2 q=p-vec2(cos(fi*1.047+phase),sin(fi*1.047-phase*.5))*.32;
+    mask+=smoothstep(.028,0.0,abs(box(q,vec2(.08+.02*sin(phase+fi),.18)) ))*.65;
+  }
+  mask*=smoothstep(1.25,.22,length(uv));
+  vec3 color=mix(u_a,u_b,mask);
+  gl_FragColor=vec4(color*mask,1.0);
+}`.trim(),
+};
+
 const vertexShader = `
 attribute vec2 a_position;
 
@@ -202,6 +361,7 @@ let recordingStartedAt = 0;
 let recordingProgressId = 0;
 let alphaFrameId = 0;
 let uniforms;
+let didBindResize = false;
 
 initialize();
 
@@ -244,7 +404,8 @@ async function loadProjectData() {
 }
 
 function setupGl() {
-  program = createProgram(vertexShader, baseFragmentShader);
+  if (program) gl.deleteProgram(program);
+  program = createProgram(vertexShader, shaderForPiece(activePiece));
   gl.useProgram(program);
 
   const buffer = gl.createBuffer();
@@ -269,7 +430,10 @@ function setupGl() {
     b: gl.getUniformLocation(program, "u_b"),
   };
 
-  window.addEventListener("resize", resize);
+  if (!didBindResize) {
+    window.addEventListener("resize", resize);
+    didBindResize = true;
+  }
   resize();
 }
 
@@ -362,10 +526,11 @@ function renderContent() {
       activePiece = piece;
       startTime = performance.now();
       pausedAt = 0;
+      setupGl();
       renderContent();
     });
     const small = document.createElement("small");
-    small.textContent = `${piece.date} / ${piece.loopSeconds}s GLSL loop`;
+    small.textContent = `${piece.date} / ${piece.loopSeconds}s / ${pieceFamily(piece)}`;
     item.append(button, small);
     archive.append(item);
   });
@@ -451,6 +616,7 @@ document.querySelector("#save-project").addEventListener("click", () => {
       u_resolution: "vec2 render target size",
       u_time: "float seconds",
       u_loop: activePiece.loopSeconds,
+      u_family: pieceFamily(activePiece),
       u_variant: pieceVariant(activePiece),
       u_seed: pieceSeed(activePiece),
       u_a: activePiece.palette.slice(0, 3),
@@ -499,12 +665,13 @@ function compileShader(type, source) {
 }
 
 function makePortableShader(piece) {
-  return `${baseFragmentShader}
+  return `${shaderForPiece(piece)}
 
 // Daily XR/GLSL VJ Loop
 // Date: ${piece.date}
 // Title: ${piece.title}
 // Loop seconds: ${piece.loopSeconds}
+// Family: ${pieceFamily(piece)}
 // Variant: ${pieceVariant(piece)}
 // Seed: ${pieceSeed(piece).toFixed(3)}
 // Uniforms expected: u_resolution, u_time, u_loop, u_variant, u_seed, u_a, u_b
@@ -689,6 +856,14 @@ function pickPiece(date) {
     copy: "日付シードから生成される公開用GLSL VJループ。常に整数秒の周期で戻るため、素材として扱いやすい。",
     why: "手動更新が止まった日も公開が途切れないよう、日付からGLSLの色と尺を決定する。後から検索メモを足せば、その日のアーカイブとして固定できる。",
   };
+}
+
+function shaderForPiece(piece) {
+  return fragmentShaders[pieceFamily(piece)] || fragmentShaders["core-loop"];
+}
+
+function pieceFamily(piece) {
+  return piece.family || "core-loop";
 }
 
 function pieceVariant(piece) {
