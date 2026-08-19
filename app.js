@@ -34,6 +34,8 @@ precision highp float;
 uniform vec2 u_resolution;
 uniform float u_time;
 uniform float u_loop;
+uniform float u_variant;
+uniform float u_seed;
 uniform vec3 u_a;
 uniform vec3 u_b;
 
@@ -54,28 +56,127 @@ float bands(vec2 p, float phase) {
   return smoothstep(0.48, 1.0, abs(v) * 0.5);
 }
 
+float spoke(vec2 p, float count, float phase) {
+  float a = atan(p.y, p.x);
+  float r = length(p);
+  float v = cos(a * count + phase + sin(r * 8.0 - phase));
+  return smoothstep(0.82, 1.0, v) * smoothstep(1.18, 0.12, r);
+}
+
+float boxSdf(vec2 p, vec2 b) {
+  vec2 d = abs(p) - b;
+  return length(max(d, 0.0)) + min(max(d.x, d.y), 0.0);
+}
+
+float capsule(vec2 p, vec2 a, vec2 b, float radius) {
+  vec2 pa = p - a;
+  vec2 ba = b - a;
+  float h = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0);
+  return smoothstep(radius, 0.0, length(pa - ba * h));
+}
+
+float hash21(vec2 p) {
+  p = fract(p * vec2(123.34, 345.45));
+  p += dot(p, p + 34.345);
+  return fract(p.x * p.y);
+}
+
+float variantField(vec2 uv, float phase) {
+  float variant = floor(u_variant + 0.5);
+  vec2 p = uv;
+  float field = 0.0;
+
+  if (variant < 0.5) {
+    p *= rot(phase);
+    float pulse = 0.5 + 0.5 * sin(phase);
+    field += ring(p, 0.28 + pulse * 0.24, 0.045);
+    field += ring(p * rot(-phase * 0.6), 0.72, 0.025) * 0.7;
+    p.x += sin(p.y * 3.0 + phase) * 0.12;
+    p.y += cos(p.x * 2.2 - phase) * 0.10;
+    field += bands(p, phase) * 0.55;
+  } else if (variant < 1.5) {
+    vec2 q = p;
+    q.x = abs(q.x);
+    q *= rot(sin(phase) * 0.55);
+    field += ring(q, 0.34 + 0.12 * sin(phase * 2.0), 0.035) * 0.9;
+    field += ring(q * 1.6, 0.52, 0.018) * 0.8;
+    field += spoke(q, 10.0, phase * 2.0) * 0.75;
+  } else if (variant < 2.5) {
+    vec2 q = p * rot(phase * 0.25);
+    float tunnel = 0.0;
+    for (int i = 0; i < 5; i++) {
+      float fi = float(i);
+      float z = fract(fi / 5.0 + phase / 6.2831853);
+      float scale = mix(2.2, 0.42, z);
+      vec2 cell = q * scale;
+      float box = abs(boxSdf(cell, vec2(0.62 + z * 0.16)));
+      tunnel += smoothstep(0.045, 0.0, box) * (1.0 - z);
+    }
+    field += tunnel;
+    field += spoke(q, 4.0, -phase) * 0.35;
+  } else if (variant < 3.5) {
+    vec2 q = p;
+    q.x += sin(q.y * 5.0 + phase) * 0.13;
+    q.y += sin(q.x * 4.0 - phase * 1.2) * 0.13;
+    vec2 grid = abs(fract(q * 5.0 + vec2(phase * 0.08, -phase * 0.06)) - 0.5);
+    float lines = smoothstep(0.035, 0.0, min(grid.x, grid.y));
+    field += lines * smoothstep(1.15, 0.2, length(q));
+    field += ring(q, 0.48 + 0.11 * sin(phase), 0.025);
+  } else if (variant < 4.5) {
+    vec2 q = p * rot(phase * 0.16);
+    float petals = 0.0;
+    for (int i = 0; i < 7; i++) {
+      float fi = float(i);
+      float a = fi * 0.8975979 + phase * 0.32;
+      vec2 center = vec2(cos(a), sin(a)) * (0.25 + 0.22 * sin(phase + fi));
+      petals += ring((q - center) * rot(-a), 0.18 + 0.025 * fi, 0.026);
+    }
+    field += petals;
+    field += ring(q, 0.82, 0.018) * 0.55;
+  } else if (variant < 5.5) {
+    vec2 q = p;
+    float mirror = 0.0;
+    for (int i = 0; i < 4; i++) {
+      q = abs(q) - vec2(0.34, 0.21);
+      q *= rot(phase * 0.08 + float(i) * 0.35);
+      mirror += ring(q, 0.28, 0.018) * (1.0 - float(i) * 0.14);
+    }
+    field += mirror;
+  } else if (variant < 6.5) {
+    vec2 q = p * 3.0;
+    vec2 id = floor(q);
+    vec2 gv = fract(q) - 0.5;
+    float rnd = hash21(id + u_seed);
+    float gate = smoothstep(0.55, 1.0, sin(phase + rnd * 6.2831853) * 0.5 + 0.5);
+    field += ring(gv, 0.18 + rnd * 0.14, 0.018) * gate;
+    field += capsule(p, vec2(-0.86, sin(phase) * 0.28), vec2(0.86, -sin(phase) * 0.28), 0.015);
+  } else {
+    vec2 q = p * rot(-phase * 0.22);
+    float drift = 0.0;
+    for (int i = 0; i < 6; i++) {
+      float fi = float(i);
+      vec2 dir = vec2(cos(fi * 1.047 + phase * 0.4), sin(fi * 1.047 - phase * 0.27));
+      drift += capsule(q, dir * -0.78, dir * 0.78, 0.012 + fi * 0.003);
+    }
+    field += drift;
+    field += ring(q, 0.36 + 0.18 * sin(phase * 2.0), 0.032);
+  }
+
+  float scan = smoothstep(0.025, 0.0, abs(fract((uv.y + phase / 6.2831853) * 22.0) - 0.5));
+  return field + scan * 0.22;
+}
+
 void main() {
   vec2 uv = (gl_FragCoord.xy * 2.0 - u_resolution.xy) / min(u_resolution.x, u_resolution.y);
   float cycle = mod(u_time, u_loop) / u_loop;
   float phase = cycle * PI * 2.0;
 
-  vec2 p = uv * rot(phase);
-  float pulse = 0.5 + 0.5 * sin(phase);
-  float radial = ring(p, 0.28 + pulse * 0.24, 0.045);
-  radial += ring(p * rot(-phase * 0.6), 0.72, 0.025) * 0.7;
-
-  vec2 q = p;
-  q.x += sin(q.y * 3.0 + phase) * 0.12;
-  q.y += cos(q.x * 2.2 - phase) * 0.10;
-  float lattice = bands(q, phase);
-
-  float scan = smoothstep(0.025, 0.0, abs(fract((uv.y + cycle) * 22.0) - 0.5));
   float vignette = smoothstep(1.35, 0.25, length(uv));
-  float field = (radial + lattice * 0.55 + scan * 0.28) * vignette;
+  float field = variantField(uv, phase) * vignette;
 
-  vec3 color = mix(u_a, u_b, 0.5 + 0.5 * sin(phase + length(uv) * 3.0));
+  vec3 color = mix(u_a, u_b, 0.5 + 0.5 * sin(phase + length(uv) * (3.0 + u_variant * 0.37)));
   color *= field;
-  color += pow(max(field, 0.0), 2.0) * 0.35;
+  color += pow(max(field, 0.0), 2.0) * (0.24 + 0.04 * u_variant);
 
   gl_FragColor = vec4(color, 1.0);
 }
@@ -162,6 +263,8 @@ function setupGl() {
     resolution: gl.getUniformLocation(program, "u_resolution"),
     time: gl.getUniformLocation(program, "u_time"),
     loop: gl.getUniformLocation(program, "u_loop"),
+    variant: gl.getUniformLocation(program, "u_variant"),
+    seed: gl.getUniformLocation(program, "u_seed"),
     a: gl.getUniformLocation(program, "u_a"),
     b: gl.getUniformLocation(program, "u_b"),
   };
@@ -179,6 +282,8 @@ function draw(now) {
   gl.uniform2f(uniforms.resolution, canvas.width, canvas.height);
   gl.uniform1f(uniforms.time, elapsed * speed);
   gl.uniform1f(uniforms.loop, activePiece.loopSeconds);
+  gl.uniform1f(uniforms.variant, pieceVariant(activePiece));
+  gl.uniform1f(uniforms.seed, pieceSeed(activePiece));
   gl.uniform3f(uniforms.a, activePiece.palette[0], activePiece.palette[1], activePiece.palette[2]);
   gl.uniform3f(uniforms.b, activePiece.palette[3], activePiece.palette[4], activePiece.palette[5]);
   gl.drawArrays(gl.TRIANGLES, 0, 6);
@@ -346,6 +451,8 @@ document.querySelector("#save-project").addEventListener("click", () => {
       u_resolution: "vec2 render target size",
       u_time: "float seconds",
       u_loop: activePiece.loopSeconds,
+      u_variant: pieceVariant(activePiece),
+      u_seed: pieceSeed(activePiece),
       u_a: activePiece.palette.slice(0, 3),
       u_b: activePiece.palette.slice(3, 6),
     },
@@ -398,7 +505,9 @@ function makePortableShader(piece) {
 // Date: ${piece.date}
 // Title: ${piece.title}
 // Loop seconds: ${piece.loopSeconds}
-// Uniforms expected: u_resolution, u_time, u_loop, u_a, u_b
+// Variant: ${pieceVariant(piece)}
+// Seed: ${pieceSeed(piece).toFixed(3)}
+// Uniforms expected: u_resolution, u_time, u_loop, u_variant, u_seed, u_a, u_b
 // Palette A: vec3(${piece.palette.slice(0, 3).join(", ")})
 // Palette B: vec3(${piece.palette.slice(3, 6).join(", ")})`;
 }
@@ -580,6 +689,22 @@ function pickPiece(date) {
     copy: "日付シードから生成される公開用GLSL VJループ。常に整数秒の周期で戻るため、素材として扱いやすい。",
     why: "手動更新が止まった日も公開が途切れないよう、日付からGLSLの色と尺を決定する。後から検索メモを足せば、その日のアーカイブとして固定できる。",
   };
+}
+
+function pieceVariant(piece) {
+  const title = String(piece.title || "").toLowerCase();
+  if (title.includes("mirror")) return 5;
+  if (title.includes("tunnel") || title.includes("depth")) return 2;
+  if (title.includes("lattice") || title.includes("feedback")) return 3;
+  if (title.includes("orbit") || title.includes("halo")) return 1;
+  if (title.includes("bloom") || title.includes("luma")) return 4;
+  if (title.includes("scanline") || title.includes("signal")) return 6;
+  if (title.includes("vector") || title.includes("chromatic")) return 7;
+  return hash(`${piece.date}:${piece.title}`) % 8;
+}
+
+function pieceSeed(piece) {
+  return (hash(`${piece.date}:${piece.title}:glsl`) % 10000) / 10000;
 }
 
 function offsetDate(days) {
