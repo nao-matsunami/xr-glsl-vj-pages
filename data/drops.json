@@ -18,6 +18,41 @@
   ],
   "drops": [
     {
+      "date": "2026-08-20",
+      "title": "Transparent Signal Shell",
+      "family": "matte-alpha-tools",
+      "loopSeconds": 12,
+      "palette": [
+        0.258,
+        0.92,
+        0.668,
+        0.746,
+        0.256,
+        0.8
+      ],
+      "copy": "黒背景からアルファ化しやすい、マスクと抜き素材向けのGLSLループ。",
+      "why": "販売用MP4/MOVへの展開を考え、黒抜きやアルファMOVにしやすい形状を別系列にする。見た目だけでなく素材化しやすさを設計条件に入れる。",
+      "research": [
+        {
+          "date": "2026-08-20",
+          "summary": "今日はWebXRや通常スクリーン投影の両方で破綻しにくいGLSL表現を優先した。中心運動と暗い余白を分けると、背景合成やアルファ化の素材として扱いやすい。",
+          "sources": [
+            {
+              "label": "MDN WebXR Device API",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/API/WebXR_Device_API",
+              "note": "XR表示とブラウザ要件の確認に使う。"
+            },
+            {
+              "label": "Khronos OpenGL ES Reference Pages",
+              "url": "https://registry.khronos.org/OpenGL-Refpages/es3/",
+              "note": "WebGL寄りの関数確認に使う。"
+            }
+          ],
+          "updatedAt": "2026-08-19T21:45:00.738Z"
+        }
+      ]
+    },
+    {
       "date": "2026-08-19",
       "title": "Pulse Mirror Well",
       "loopSeconds": 20,
