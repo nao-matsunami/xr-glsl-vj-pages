@@ -18,6 +18,41 @@
   ],
   "drops": [
     {
+      "date": "2026-08-21",
+      "title": "Terminal Light Score",
+      "family": "typographic-signals",
+      "loopSeconds": 8,
+      "palette": [
+        0.92,
+        0.258,
+        0.797,
+        0.546,
+        0.8,
+        0.256
+      ],
+      "copy": "文字、バー、記号、走査線のような情報グラフィック系GLSL素材。",
+      "why": "抽象発光素材とは違う、UIやタイポグラフィ寄りの文脈を作る。ロゴモーション、イベント名、配信背景に拡張しやすい系列として分ける。",
+      "research": [
+        {
+          "date": "2026-08-21",
+          "summary": "今日はGLSLの周期関数とWebGL互換性を優先した。VJ素材としては、派手なノイズよりもsin/cosで閉じる位相設計の方が録画時に継ぎ目を管理しやすいため、短尺ループに向く。",
+          "sources": [
+            {
+              "label": "Khronos OpenGL Shading Language",
+              "url": "https://registry.khronos.org/OpenGL/specs/gl/GLSLangSpec.4.60.pdf",
+              "note": "GLSLの言語仕様確認に使う基準。"
+            },
+            {
+              "label": "MDN WebGL API",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API",
+              "note": "ブラウザ実装側の制約確認に使う。"
+            }
+          ],
+          "updatedAt": "2026-08-20T21:45:00.995Z"
+        }
+      ]
+    },
+    {
       "date": "2026-08-20",
       "title": "Transparent Signal Shell",
       "family": "matte-alpha-tools",

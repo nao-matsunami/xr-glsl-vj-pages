@@ -1,0 +1,87 @@
+{
+  "date": "2026-08-21",
+  "headline": "Terminal Light Score",
+  "headlineEn": "Terminal Light Score",
+  "summary": "文字、バー、記号、走査線のような情報グラフィック系GLSL素材。",
+  "summaryEn": "文字、バー、記号、走査線のような情報グラフィック系GLSL素材。",
+  "links": [
+    {
+      "label": "Today's sample",
+      "url": "../outputs/2026-08-21_terminal-light-score.html"
+    },
+    {
+      "label": "Live preview",
+      "url": "../live.html"
+    },
+    {
+      "label": "MDN WebXR Device API",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/WebXR_Device_API"
+    },
+    {
+      "label": "Khronos OpenGL Registry",
+      "url": "https://registry.khronos.org/OpenGL/index_gl.php"
+    },
+    {
+      "label": "Khronos OpenGL ES / GLSL Reference Pages",
+      "url": "https://registry.khronos.org/OpenGL-Refpages/index.php"
+    },
+    {
+      "label": "Khronos OpenGL Shading Language",
+      "url": "https://registry.khronos.org/OpenGL/specs/gl/GLSLangSpec.4.60.pdf"
+    },
+    {
+      "label": "MDN WebGL API",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API"
+    }
+  ],
+  "sections": [
+    {
+      "title": "今日の制作メモ",
+      "titleEn": "Production note",
+      "body": "抽象発光素材とは違う、UIやタイポグラフィ寄りの文脈を作る。ロゴモーション、イベント名、配信背景に拡張しやすい系列として分ける。",
+      "bodyEn": "抽象発光素材とは違う、UIやタイポグラフィ寄りの文脈を作る。ロゴモーション、イベント名、配信背景に拡張しやすい系列として分ける。",
+      "links": [
+        {
+          "label": "MDN WebXR Device API",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/WebXR_Device_API"
+        },
+        {
+          "label": "Khronos OpenGL Registry",
+          "url": "https://registry.khronos.org/OpenGL/index_gl.php"
+        },
+        {
+          "label": "Khronos OpenGL ES / GLSL Reference Pages",
+          "url": "https://registry.khronos.org/OpenGL-Refpages/index.php"
+        }
+      ]
+    },
+    {
+      "title": "Daily Research 2026-08-21",
+      "titleEn": "Daily Research 2026-08-21",
+      "body": "今日はGLSLの周期関数とWebGL互換性を優先した。VJ素材としては、派手なノイズよりもsin/cosで閉じる位相設計の方が録画時に継ぎ目を管理しやすいため、短尺ループに向く。",
+      "bodyEn": "今日はGLSLの周期関数とWebGL互換性を優先した。VJ素材としては、派手なノイズよりもsin/cosで閉じる位相設計の方が録画時に継ぎ目を管理しやすいため、短尺ループに向く。",
+      "links": [
+        {
+          "label": "Khronos OpenGL Shading Language",
+          "url": "https://registry.khronos.org/OpenGL/specs/gl/GLSLangSpec.4.60.pdf"
+        },
+        {
+          "label": "MDN WebGL API",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API"
+        }
+      ]
+    },
+    {
+      "title": "今日のミニ試作候補",
+      "titleEn": "Today's mini prototype candidate",
+      "body": "Terminal Light Score を 8 秒でループするVJサンプルとして固定しました。GitHub Pagesでは軽量プレビューを見せ、販売用のMP4やalpha MOVは選抜後にMac miniで固定FPSレンダーします。",
+      "bodyEn": "Terminal Light Score is fixed as a 8-second looping VJ sample. GitHub Pages carries the lightweight preview, while saleable MP4 and alpha MOV masters should be rendered later on the Mac mini at fixed FPS.",
+      "links": [
+        {
+          "label": "Today's sample",
+          "url": "../outputs/2026-08-21_terminal-light-score.html"
+        }
+      ]
+    }
+  ]
+}
