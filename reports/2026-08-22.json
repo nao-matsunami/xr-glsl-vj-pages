@@ -1,0 +1,87 @@
+{
+  "date": "2026-08-22",
+  "headline": "Raymarch Vessel Gate",
+  "headlineEn": "Raymarch Vessel Gate",
+  "summary": "距離関数で立体物を作る、オブジェクト感の強いGLSL VJループ。",
+  "summaryEn": "距離関数で立体物を作る、オブジェクト感の強いGLSL VJループ。",
+  "links": [
+    {
+      "label": "Today's sample",
+      "url": "../outputs/2026-08-22_raymarch-vessel-gate.html"
+    },
+    {
+      "label": "Live preview",
+      "url": "../live.html"
+    },
+    {
+      "label": "MDN WebXR Device API",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/WebXR_Device_API"
+    },
+    {
+      "label": "Khronos OpenGL Registry",
+      "url": "https://registry.khronos.org/OpenGL/index_gl.php"
+    },
+    {
+      "label": "Khronos OpenGL ES / GLSL Reference Pages",
+      "url": "https://registry.khronos.org/OpenGL-Refpages/index.php"
+    },
+    {
+      "label": "MDN WebXR Device API",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/WebXR_Device_API"
+    },
+    {
+      "label": "Khronos OpenGL ES Reference Pages",
+      "url": "https://registry.khronos.org/OpenGL-Refpages/es3/"
+    }
+  ],
+  "sections": [
+    {
+      "title": "今日の制作メモ",
+      "titleEn": "Production note",
+      "body": "core-loopとは別文脈として、平面パターンではなく3D距離関数の立体感を主役にする。Three.jsやBlenderで反応が良かった有機的オブジェクト方向へつなげやすい。",
+      "bodyEn": "core-loopとは別文脈として、平面パターンではなく3D距離関数の立体感を主役にする。Three.jsやBlenderで反応が良かった有機的オブジェクト方向へつなげやすい。",
+      "links": [
+        {
+          "label": "MDN WebXR Device API",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/WebXR_Device_API"
+        },
+        {
+          "label": "Khronos OpenGL Registry",
+          "url": "https://registry.khronos.org/OpenGL/index_gl.php"
+        },
+        {
+          "label": "Khronos OpenGL ES / GLSL Reference Pages",
+          "url": "https://registry.khronos.org/OpenGL-Refpages/index.php"
+        }
+      ]
+    },
+    {
+      "title": "Daily Research 2026-08-22",
+      "titleEn": "Daily Research 2026-08-22",
+      "body": "今日はWebXRや通常スクリーン投影の両方で破綻しにくいGLSL表現を優先した。中心運動と暗い余白を分けると、背景合成やアルファ化の素材として扱いやすい。",
+      "bodyEn": "今日はWebXRや通常スクリーン投影の両方で破綻しにくいGLSL表現を優先した。中心運動と暗い余白を分けると、背景合成やアルファ化の素材として扱いやすい。",
+      "links": [
+        {
+          "label": "MDN WebXR Device API",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/WebXR_Device_API"
+        },
+        {
+          "label": "Khronos OpenGL ES Reference Pages",
+          "url": "https://registry.khronos.org/OpenGL-Refpages/es3/"
+        }
+      ]
+    },
+    {
+      "title": "今日のミニ試作候補",
+      "titleEn": "Today's mini prototype candidate",
+      "body": "Raymarch Vessel Gate を 20 秒でループするVJサンプルとして固定しました。GitHub Pagesでは軽量プレビューを見せ、販売用のMP4やalpha MOVは選抜後にMac miniで固定FPSレンダーします。",
+      "bodyEn": "Raymarch Vessel Gate is fixed as a 20-second looping VJ sample. GitHub Pages carries the lightweight preview, while saleable MP4 and alpha MOV masters should be rendered later on the Mac mini at fixed FPS.",
+      "links": [
+        {
+          "label": "Today's sample",
+          "url": "../outputs/2026-08-22_raymarch-vessel-gate.html"
+        }
+      ]
+    }
+  ]
+}

@@ -18,6 +18,41 @@
   ],
   "drops": [
     {
+      "date": "2026-08-22",
+      "title": "Raymarch Vessel Gate",
+      "family": "raymarch-objects",
+      "loopSeconds": 20,
+      "palette": [
+        0.258,
+        0.597,
+        0.92,
+        0.8,
+        0.256,
+        0.382
+      ],
+      "copy": "距離関数で立体物を作る、オブジェクト感の強いGLSL VJループ。",
+      "why": "core-loopとは別文脈として、平面パターンではなく3D距離関数の立体感を主役にする。Three.jsやBlenderで反応が良かった有機的オブジェクト方向へつなげやすい。",
+      "research": [
+        {
+          "date": "2026-08-22",
+          "summary": "今日はWebXRや通常スクリーン投影の両方で破綻しにくいGLSL表現を優先した。中心運動と暗い余白を分けると、背景合成やアルファ化の素材として扱いやすい。",
+          "sources": [
+            {
+              "label": "MDN WebXR Device API",
+              "url": "https://developer.mozilla.org/en-US/docs/Web/API/WebXR_Device_API",
+              "note": "XR表示とブラウザ要件の確認に使う。"
+            },
+            {
+              "label": "Khronos OpenGL ES Reference Pages",
+              "url": "https://registry.khronos.org/OpenGL-Refpages/es3/",
+              "note": "WebGL寄りの関数確認に使う。"
+            }
+          ],
+          "updatedAt": "2026-08-21T21:45:02.269Z"
+        }
+      ]
+    },
+    {
       "date": "2026-08-21",
       "title": "Terminal Light Score",
       "family": "typographic-signals",
