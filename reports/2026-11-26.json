@@ -1,0 +1,87 @@
+{
+  "date": "2026-11-26",
+  "headline": "Terminal Light Score",
+  "headlineEn": "Terminal Light Score",
+  "summary": "文字、バー、記号、走査線のような情報グラフィック系GLSL素材。",
+  "summaryEn": "文字、バー、記号、走査線のような情報グラフィック系GLSL素材。",
+  "links": [
+    {
+      "label": "Today's sample",
+      "url": "../outputs/2026-11-26_terminal-light-score.html"
+    },
+    {
+      "label": "Live preview",
+      "url": "../live.html"
+    },
+    {
+      "label": "MDN WebXR Device API",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/WebXR_Device_API"
+    },
+    {
+      "label": "Khronos OpenGL Registry",
+      "url": "https://registry.khronos.org/OpenGL/index_gl.php"
+    },
+    {
+      "label": "Khronos OpenGL ES / GLSL Reference Pages",
+      "url": "https://registry.khronos.org/OpenGL-Refpages/index.php"
+    },
+    {
+      "label": "MDN WebXR Device API",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/WebXR_Device_API"
+    },
+    {
+      "label": "Khronos OpenGL ES Reference Pages",
+      "url": "https://registry.khronos.org/OpenGL-Refpages/es3/"
+    }
+  ],
+  "sections": [
+    {
+      "title": "今日の制作メモ",
+      "titleEn": "Production note",
+      "body": "抽象発光素材とは違う、UIやタイポグラフィ寄りの文脈を作る。ロゴモーション、イベント名、配信背景に拡張しやすい系列として分ける。",
+      "bodyEn": "抽象発光素材とは違う、UIやタイポグラフィ寄りの文脈を作る。ロゴモーション、イベント名、配信背景に拡張しやすい系列として分ける。",
+      "links": [
+        {
+          "label": "MDN WebXR Device API",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/WebXR_Device_API"
+        },
+        {
+          "label": "Khronos OpenGL Registry",
+          "url": "https://registry.khronos.org/OpenGL/index_gl.php"
+        },
+        {
+          "label": "Khronos OpenGL ES / GLSL Reference Pages",
+          "url": "https://registry.khronos.org/OpenGL-Refpages/index.php"
+        }
+      ]
+    },
+    {
+      "title": "Daily Research 2026-11-26",
+      "titleEn": "Daily Research 2026-11-26",
+      "body": "今日はWebXRや通常スクリーン投影の両方で破綻しにくいGLSL表現を優先した。中心運動と暗い余白を分けると、背景合成やアルファ化の素材として扱いやすい。",
+      "bodyEn": "今日はWebXRや通常スクリーン投影の両方で破綻しにくいGLSL表現を優先した。中心運動と暗い余白を分けると、背景合成やアルファ化の素材として扱いやすい。",
+      "links": [
+        {
+          "label": "MDN WebXR Device API",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/WebXR_Device_API"
+        },
+        {
+          "label": "Khronos OpenGL ES Reference Pages",
+          "url": "https://registry.khronos.org/OpenGL-Refpages/es3/"
+        }
+      ]
+    },
+    {
+      "title": "今日のミニ試作候補",
+      "titleEn": "Today's mini prototype candidate",
+      "body": "Terminal Light Score を 20 秒でループするVJサンプルとして固定しました。GitHub Pagesでは軽量プレビューを見せ、販売用のMP4やalpha MOVは選抜後にMac miniで固定FPSレンダーします。",
+      "bodyEn": "Terminal Light Score is fixed as a 20-second looping VJ sample. GitHub Pages carries the lightweight preview, while saleable MP4 and alpha MOV masters should be rendered later on the Mac mini at fixed FPS.",
+      "links": [
+        {
+          "label": "Today's sample",
+          "url": "../outputs/2026-11-26_terminal-light-score.html"
+        }
+      ]
+    }
+  ]
+}
